@@ -1,0 +1,57 @@
+//@import "../../../../node_modules/bootstrap/scss/bootstrap.scss";
+
+.grid-and-sounds-wrapper {
+  text-align: center;
+
+  > div {
+    display: inline-block;
+  }
+}
+
+.sounds {
+  float: left;
+  font-size: 12px;
+  margin-top: 21px;
+
+  div {
+    height: 34px;
+    line-height: 34px;
+    margin-right: 5px;
+    text-align: right;
+  }
+}
+
+.grid-wrapper {
+  float: left;
+  text-align: left;
+}
+
+.square {
+  float: left;
+  font-size: 8px;
+  height: 32px;
+  width: 32px;
+  border-radius: 3px;
+  margin: 1px;
+  background: darkgray;
+}
+
+.column-header {
+  background: inherit;
+  font-size: 14px;
+  text-align: center;
+}
+
+.beat-square {
+  background: black;
+}
+
+.active-square {
+  background: red;
+}
+
+.playback-arrow {
+  color: darkred;
+  display: inline-block;
+  height: 20px;
+}

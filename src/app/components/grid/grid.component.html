@@ -1,0 +1,45 @@
+<p><strong>Time signature:</strong> {{beatService.timeSignature.notesPerMeasure}}/{{beatService.timeSignature.noteType}}</p>
+<p><b>Division level:</b> {{beatService.divisionLevel}}th</p>
+
+<div>
+  <button (click)="togglePlayback()">
+    {{ isPlaying ? 'Pause' : 'Play' }}
+  </button>
+</div>
+
+<div class="grid-and-sounds-wrapper">
+  <div>
+    <div class="sounds">
+      <div *ngFor="let sound of sounds"
+           (click)="onSoundClicked(sound)">
+        {{ sound.name }}
+      </div>
+    </div>
+    <div class="grid-wrapper">
+      <div class="playback-arrow"
+           [style.margin-left]="playbackCursorLeftMargin + 'px'">
+        &#9662;
+      </div>
+      <div *ngFor="let row of squares"
+           style.width="{{ gridWidth + 'px' }}">
+        <div *ngFor="let square of row"
+             class="square"
+             (click)="onSquareClicked(square)"
+             style.width="{{ noteWidth + 'px' }}"
+             [class.beat-square]="isBeatColumn(square.column)"
+             [class.active-square]="square.on">
+        </div>
+        <div style="clear:both;"></div>
+      </div>
+      <div style="clear:both;"></div>
+      <div *ngIf="squares.length > 0">
+        <div *ngFor="let square of squares[0]; let i = index"
+             class="square column-header"
+             style.width="{{ noteWidth + 'px' }}"
+             [innerHtml]="getColumnFooter(i)">
+        </div>
+      </div>
+    </div>
+    <div style="clear:both"></div>
+  </div>
+</div>
