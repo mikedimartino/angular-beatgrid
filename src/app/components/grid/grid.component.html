@@ -1,5 +1,6 @@
-<p><strong>Time signature:</strong> {{beatService.timeSignature.notesPerMeasure}}/{{beatService.timeSignature.noteType}}</p>
-<p><b>Division level:</b> {{beatService.divisionLevel}}th</p>
+<p><strong>Time signature:</strong> {{ beatService.timeSignature.notesPerMeasure }}/{{ beatService.timeSignature.noteType }}</p>
+<p><b>Division level:</b> {{ beatService.divisionLevel }}th</p>
+<p>Tempo: <input type="number" [(ngModel)]="beatService.tempo" (ngModelChange)="onTempoChanged()"></p>
 
 <div>
   <button (click)="togglePlayback()">
@@ -16,10 +17,6 @@
       </div>
     </div>
     <div class="grid-wrapper">
-      <div class="playback-arrow"
-           [style.margin-left]="playbackCursorLeftMargin + 'px'">
-        &#9662;
-      </div>
       <div *ngFor="let row of squares"
            style.width="{{ gridWidth + 'px' }}">
         <div *ngFor="let square of row"
@@ -27,16 +24,19 @@
              (click)="onSquareClicked(square)"
              style.width="{{ noteWidth + 'px' }}"
              [class.beat-square]="isBeatColumn(square.column)"
-             [class.active-square]="square.on">
+             [class.active-square]="square.on"
+             [class.active-column]="square.column === playbackService.activeColumn">
         </div>
         <div style="clear:both;"></div>
       </div>
       <div style="clear:both;"></div>
       <div *ngIf="squares.length > 0">
         <div *ngFor="let square of squares[0]; let i = index"
-             class="square column-header"
+             class="square column-footer"
+             [class.active-column-footer]="playbackService.activeColumn === i"
              style.width="{{ noteWidth + 'px' }}"
-             [innerHtml]="getColumnFooter(i)">
+             [innerHtml]="getColumnFooter(i)"
+             (click)="onFooterClicked(i)">
         </div>
       </div>
     </div>

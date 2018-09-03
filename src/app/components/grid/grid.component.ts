@@ -6,8 +6,6 @@ import {BeatService} from '../../services/beat.service';
 
 const wholeNoteWidth = 32 * 16;
 const noteMargin = 1;
-const fps = 60;
-const animationIntervalMs = 1000 / fps;
 
 @Component({
   selector: 'app-grid',
@@ -21,21 +19,18 @@ export class GridComponent implements OnInit {
   squares: GridSquare[][];
   rows = 8;
   isPlaying = false;
-  interval: any;
   sounds: GridSound[];
 
   noteWidth: number;
   gridWidth: number;
-  playbackCursorLeftMargin = 0;
-  playbackCursorPxPerFrame: number;
 
   constructor(public beatService: BeatService,
-              private playbackService: PlaybackService) {
+              public playbackService: PlaybackService) {
   }
 
   ngOnInit() {
     this.generateGrid();
-    this.playbackCursorPxPerFrame = this.calculateCursorPxPerFrame();
+    this.generateDefaultBeat();
     this.sounds = this.playbackService.sounds;
   }
 
@@ -47,15 +42,15 @@ export class GridComponent implements OnInit {
     if (this.isBeatColumn(column)) {
       return column / (this.beatService.divisionLevel / this.beatService.timeSignature.noteType);
     }
-    return  '&#9702';
+    return '&#9679;';
   }
 
   togglePlayback() {
     this.isPlaying = !this.isPlaying;
     if (this.isPlaying) {
-      this.interval = setInterval(this.animationUpdate.bind(this), animationIntervalMs);
+      this.playbackService.startPlayback();
     } else {
-      clearInterval(this.interval);
+      this.playbackService.stopPlayback();
     }
   }
 
@@ -65,7 +60,15 @@ export class GridComponent implements OnInit {
   }
 
   onSoundClicked(sound: GridSound) {
-    this.playbackService.playSound(sound);
+    this.playbackService.playSound(sound.id);
+  }
+
+  onFooterClicked(column: number) {
+    this.playbackService.setActiveColumn(column;)
+  }
+
+  onTempoChanged() {
+    this.playbackService.updateColumnDuration();
   }
 
   private generateGrid() {
@@ -80,25 +83,26 @@ export class GridComponent implements OnInit {
     }
   }
 
+  private generateDefaultBeat() {
+    for (let i = 0; i < this.beatService.columns; i ++) {
+      // Hi-Hat
+      if (i % 2 === 0) {
+        this.onSquareClicked(this.squares[0][i]);
+      }
+      // Snare
+      if ((i - 4) % 8 === 0) {
+        this.onSquareClicked(this.squares[1][i]);
+      }
+      // Kick
+      if (i % 8 === 0) {
+        this.onSquareClicked(this.squares[2][i]);
+      }
+    }
+  }
+
   private calculateGridWidth(): number {
     this.noteWidth = wholeNoteWidth / this.beatService.divisionLevel;
     return (this.noteWidth + (2 * noteMargin)) * this.beatService.columns;
-  }
-
-  // Assumes that the tempo is in BPM (beats per minute)
-  private calculateSecondsPerMeasure(): number {
-    return (60 * this.beatService.timeSignature.notesPerMeasure) / this.beatService.tempo;
-  }
-
-  // Number of pixels cursor should move per second
-  private calculateCursorPxPerFrame(): number {
-    const measuresPerSecond = 1 / this.calculateSecondsPerMeasure();
-    const measuresPerFrame = measuresPerSecond / fps;
-    return measuresPerFrame * this.gridWidth;
-  }
-
-  private animationUpdate() {
-    this.playbackCursorLeftMargin = (this.playbackCursorLeftMargin + this.playbackCursorPxPerFrame) % (this.gridWidth - 15);
   }
 
 }
