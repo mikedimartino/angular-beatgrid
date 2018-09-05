@@ -10,10 +10,10 @@ const schedulerFrequencyMs = 50;
 export class PlaybackService {
   private audioContext = new AudioContext();
   private audioBuffers: { [soundId: number]: AudioBuffer };
-  private activeSoundsByColumn: number[][];
+  private activeSoundsByMeasureColumn: number[][][]; // [measure][column][row]
   private columnDurationMs: number;
   private playbackInterval: any;
-  private lastColumnPlayed: number;
+  private lastColumnPlayed = 0;
   private lastColumnPlaybackTime: number;
   private state: PlaybackState = <PlaybackState>{};
 
@@ -32,12 +32,14 @@ export class PlaybackService {
   constructor(private beatService: BeatService) {
     this.fetchSounds().then(() => console.log('Finished loading sounds.'));
     this.updateColumnDuration();
-    this.lastColumnPlayed = -1;
-    this.state.currentMeasureIndex = -1;
+    this.state.currentMeasureIndex = 0;
 
-    this.activeSoundsByColumn = [];
-    for (let c = 0; c < this.beatService.columnsPerMeasure; c++) {
-      this.activeSoundsByColumn[c] = [];
+    this.activeSoundsByMeasureColumn = [];
+    for (let m = 0; m < this.beatService.measures.length; m++) {
+      this.activeSoundsByMeasureColumn[m] = [];
+      for (let c = 0; c < this.beatService.columnsPerMeasure; c++) {
+        this.activeSoundsByMeasureColumn[m][c] = [];
+      }
     }
 
     this.state.currentMeasure = this.beatService.measures[0];
@@ -52,7 +54,7 @@ export class PlaybackService {
   }
 
   setColumnSoundActive(column: number, row: number, active: boolean) {
-    const activeSoundsColumn = this.activeSoundsByColumn[column];
+    const activeSoundsColumn = this.activeSoundsByMeasureColumn[this.currentMeasureIndex][column];
     const soundId = this.beatService.getSoundByRow(row).id;
     if (active) {
       activeSoundsColumn.push(soundId);
@@ -83,38 +85,43 @@ export class PlaybackService {
     this.state.currentMeasure = this.beatService.measures[this.currentMeasureIndex];
   }
 
+  setActiveColumn(column: number) {
+    this.lastColumnPlayed = Math.abs((column - 1) % this.beatService.columnsPerMeasure);
+    this.state.activeColumn = column;
+  }
+
+  updateColumnDuration() {
+    this.columnDurationMs = 60000 / (this.beatService.tempo * this.beatService.columnsPerNote);
+  }
+
   // Schedules column to be played (if necessary)
   private tryScheduleColumn() {
     if (!this.lastColumnPlaybackTime) {
-      this.lastColumnPlaybackTime = (this.audioContext.currentTime * 1000) - this.columnDurationMs;
-    }
-    if (((this.audioContext.currentTime * 1000) + (schedulerFrequencyMs + 10)) - this.lastColumnPlaybackTime > this.columnDurationMs) {
+      this.lastColumnPlaybackTime = (this.audioContext.currentTime * 1000);
+    } else if (this.shouldSchedule()) {
       this.lastColumnPlaybackTime = this.lastColumnPlaybackTime + this.columnDurationMs;
       this.lastColumnPlayed = (this.lastColumnPlayed + 1) % this.beatService.columnsPerMeasure;
       if (this.lastColumnPlayed === 0) {
         this.state.currentMeasureIndex = (this.currentMeasureIndex + 1) % this.beatService.measures.length;
         this.state.currentMeasure = this.beatService.measures[this.currentMeasureIndex];
       }
-      this.scheduleColumn(this.lastColumnPlayed, this.lastColumnPlaybackTime);
+    } else {
+      return;
     }
+    this.scheduleColumn(this.lastColumnPlayed, this.lastColumnPlaybackTime);
+  }
+
+  private shouldSchedule(): boolean {
+    return ((this.audioContext.currentTime * 1000) + (schedulerFrequencyMs + 10)) - this.lastColumnPlaybackTime > this.columnDurationMs;
   }
 
   private scheduleColumn(column: number, timeMs: number) {
     const nextColumnMs = timeMs - (this.audioContext.currentTime * 1000);
     setTimeout(() => this.state.activeColumn = column, nextColumnMs);
 
-    this.activeSoundsByColumn[column].forEach(soundId => {
+    this.activeSoundsByMeasureColumn[this.currentMeasureIndex][column].forEach(soundId => {
       this.playSound(soundId, timeMs);
     });
-  }
-
-  setActiveColumn(column: number) {
-    this.lastColumnPlayed = (column - 1) % this.beatService.columnsPerMeasure;
-    this.state.activeColumn = column;
-  }
-
-  updateColumnDuration() {
-    this.columnDurationMs = 60000 / (this.beatService.tempo * this.beatService.columnsPerNote);
   }
 
   private fetchSounds(): Promise<any[] | void> {
