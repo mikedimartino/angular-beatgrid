@@ -32,6 +32,7 @@ export class PlaybackService {
   constructor(private beatService: BeatService) {
     this.fetchSounds().then(() => console.log('Finished loading sounds.'));
     this.updateColumnDuration();
+    this.state.currentMeasure = this.beatService.measures[0];
     this.state.currentMeasureIndex = 0;
 
     this.activeSoundsByMeasureColumn = [];
@@ -41,8 +42,6 @@ export class PlaybackService {
         this.activeSoundsByMeasureColumn[m][c] = [];
       }
     }
-
-    this.state.currentMeasure = this.beatService.measures[0];
   }
 
   playSound(soundId: number, timeMs = 0) {
@@ -83,6 +82,7 @@ export class PlaybackService {
     }
     this.state.currentMeasureIndex = Math.abs((this.currentMeasureIndex + increment) % this.beatService.measures.length);
     this.state.currentMeasure = this.beatService.measures[this.currentMeasureIndex];
+    this.setActiveColumn(0);
   }
 
   setActiveColumn(column: number) {
