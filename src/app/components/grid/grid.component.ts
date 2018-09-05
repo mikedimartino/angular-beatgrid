@@ -16,11 +16,7 @@ const noteMargin = 1;
   ]
 })
 export class GridComponent implements OnInit {
-  squares: GridSquare[][];
-  rows = 8;
   isPlaying = false;
-  sounds: GridSound[];
-
   noteWidth: number;
   gridWidth: number;
 
@@ -29,18 +25,20 @@ export class GridComponent implements OnInit {
   }
 
   ngOnInit() {
-    this.generateGrid();
-    this.generateDefaultBeat();
-    this.sounds = this.playbackService.sounds;
+    // this.generateGrid();
+    // this.generateDefaultBeat();
+    // this.sounds = this.playbackService.sounds;
+    this.calculateWidths();
+    // TODO: Subscribe to an event for when beat changes to re-calculate widths
   }
 
   isBeatColumn(column: number) {
-    return column % (this.beatService.divisionLevel / this.beatService.timeSignature.noteType) === 0;
+    return column % (this.beatService.beat.divisionLevel / this.beatService.beat.timeSignature.noteType) === 0;
   }
 
   getColumnFooter(column: number) {
     if (this.isBeatColumn(column)) {
-      return column / (this.beatService.divisionLevel / this.beatService.timeSignature.noteType);
+      return column / (this.beatService.beat.divisionLevel / this.beatService.beat.timeSignature.noteType);
     }
     return '&#9679;';
   }
@@ -64,45 +62,20 @@ export class GridComponent implements OnInit {
   }
 
   onFooterClicked(column: number) {
-    this.playbackService.setActiveColumn(column;)
+    this.playbackService.setActiveColumn(column);
   }
 
   onTempoChanged() {
     this.playbackService.updateColumnDuration();
   }
 
-  private generateGrid() {
-    this.squares = [];
-    this.gridWidth = this.calculateGridWidth();
-
-    for (let r = 0; r < this.rows; r++) {
-      this.squares[r] = [];
-      for (let c = 0; c < this.beatService.columns; c++) {
-        this.squares[r][c] = new GridSquare(r, c);
-      }
-    }
+  onChangeMeasure(previous = false) {
+    this.playbackService.changeMeasure(previous);
   }
 
-  private generateDefaultBeat() {
-    for (let i = 0; i < this.beatService.columns; i ++) {
-      // Hi-Hat
-      if (i % 2 === 0) {
-        this.onSquareClicked(this.squares[0][i]);
-      }
-      // Snare
-      if ((i - 4) % 8 === 0) {
-        this.onSquareClicked(this.squares[1][i]);
-      }
-      // Kick
-      if (i % 8 === 0) {
-        this.onSquareClicked(this.squares[2][i]);
-      }
-    }
-  }
-
-  private calculateGridWidth(): number {
-    this.noteWidth = wholeNoteWidth / this.beatService.divisionLevel;
-    return (this.noteWidth + (2 * noteMargin)) * this.beatService.columns;
+  private calculateWidths(): void {
+    this.noteWidth = wholeNoteWidth / this.beatService.beat.divisionLevel;
+    this.gridWidth = (this.noteWidth + (2 * noteMargin)) * this.beatService.beat.columnsPerMeasure;
   }
 
 }

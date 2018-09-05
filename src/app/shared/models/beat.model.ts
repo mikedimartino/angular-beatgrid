@@ -1,11 +1,15 @@
 import {TimeSignature} from './time-signature.model';
+import {GridSound} from './grid-sound.model';
+import {Measure} from './measure.model';
+
 
 export class Beat {
   id: number;
   name: string;
-  filePath: string;
-  columns: number;
-  tempo = 60;
-  timeSignature = new TimeSignature(4, 4);
-  divisionLevel = 16;
+  tempo: number;
+  timeSignature: TimeSignature;
+  divisionLevel: number;
+  sounds: GridSound[];
+  measures: Measure[];
+  columnsPerMeasure: number;
 }

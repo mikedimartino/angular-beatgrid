@@ -1,6 +1,6 @@
-<p><strong>Time signature:</strong> {{ beatService.timeSignature.notesPerMeasure }}/{{ beatService.timeSignature.noteType }}</p>
-<p><b>Division level:</b> {{ beatService.divisionLevel }}th</p>
-<p>Tempo: <input type="number" [(ngModel)]="beatService.tempo" (ngModelChange)="onTempoChanged()"></p>
+<p><strong>Time signature:</strong> {{ beatService.beat.timeSignature.notesPerMeasure }}/{{ beatService.beat.timeSignature.noteType }}</p>
+<p><b>Division level:</b> {{ beatService.beat.divisionLevel }}th</p>
+<p>Tempo: <input type="number" [(ngModel)]="beatService.beat.tempo" (ngModelChange)="onTempoChanged()"></p>
 
 <div>
   <button (click)="togglePlayback()">
@@ -11,13 +11,13 @@
 <div class="grid-and-sounds-wrapper">
   <div>
     <div class="sounds">
-      <div *ngFor="let sound of sounds"
+      <div *ngFor="let sound of beatService.beat.sounds"
            (click)="onSoundClicked(sound)">
         {{ sound.name }}
       </div>
     </div>
     <div class="grid-wrapper">
-      <div *ngFor="let row of squares"
+      <div *ngFor="let row of playbackService.currentMeasure.squares"
            style.width="{{ gridWidth + 'px' }}">
         <div *ngFor="let square of row"
              class="square"
@@ -30,8 +30,8 @@
         <div style="clear:both;"></div>
       </div>
       <div style="clear:both;"></div>
-      <div *ngIf="squares.length > 0">
-        <div *ngFor="let square of squares[0]; let i = index"
+      <div *ngIf="playbackService.currentMeasure.squares.length > 0">
+        <div *ngFor="let square of playbackService.currentMeasure.squares[0]; let i = index"
              class="square column-footer"
              [class.active-column-footer]="playbackService.activeColumn === i"
              style.width="{{ noteWidth + 'px' }}"
@@ -39,6 +39,11 @@
              (click)="onFooterClicked(i)">
         </div>
       </div>
+    </div>
+    <div class="change-measure-arrows">
+      <button (click)="onChangeMeasure(true)"> < </button>
+      <button (click)="onChangeMeasure()"> > </button>
+      <p>Measure: {{ playbackService.currentMeasureIndex }}</p>
     </div>
     <div style="clear:both"></div>
   </div>
