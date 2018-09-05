@@ -1,7 +1,7 @@
 import {GridSquare} from './grid-square.model';
 
 export class Measure {
-  squares: GridSquare[][];
+  readonly squares: GridSquare[][];
 
   constructor(rows: number, columns: number) {
     this.squares = [];

@@ -25,20 +25,17 @@ export class GridComponent implements OnInit {
   }
 
   ngOnInit() {
-    // this.generateGrid();
-    // this.generateDefaultBeat();
-    // this.sounds = this.playbackService.sounds;
     this.calculateWidths();
     // TODO: Subscribe to an event for when beat changes to re-calculate widths
   }
 
   isBeatColumn(column: number) {
-    return column % (this.beatService.beat.divisionLevel / this.beatService.beat.timeSignature.noteType) === 0;
+    return column % (this.beatService.divisionLevel / this.beatService.timeSignature.noteType) === 0;
   }
 
   getColumnFooter(column: number) {
     if (this.isBeatColumn(column)) {
-      return column / (this.beatService.beat.divisionLevel / this.beatService.beat.timeSignature.noteType);
+      return column / (this.beatService.divisionLevel / this.beatService.timeSignature.noteType);
     }
     return '&#9679;';
   }
@@ -53,7 +50,7 @@ export class GridComponent implements OnInit {
   }
 
   onSquareClicked(square: GridSquare) {
-    square.on = !square.on;
+    square.toggle();
     this.playbackService.setColumnSoundActive(square.column, square.row, square.on);
   }
 
@@ -74,8 +71,8 @@ export class GridComponent implements OnInit {
   }
 
   private calculateWidths(): void {
-    this.noteWidth = wholeNoteWidth / this.beatService.beat.divisionLevel;
-    this.gridWidth = (this.noteWidth + (2 * noteMargin)) * this.beatService.beat.columnsPerMeasure;
+    this.noteWidth = wholeNoteWidth / this.beatService.divisionLevel;
+    this.gridWidth = (this.noteWidth + (2 * noteMargin)) * this.beatService.columnsPerMeasure;
   }
 
 }

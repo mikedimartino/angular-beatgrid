@@ -17,15 +17,47 @@ export const mockSounds = [
 
 @Injectable()
 export class BeatService {
-  beat: Beat;
+  private beat: Beat;
+
+  get tempo(): number {
+    return this.beat.tempo;
+  }
+
+  get timeSignature(): TimeSignature {
+    return this.beat.timeSignature;
+  }
+
+  get divisionLevel(): number {
+    return this.beat.divisionLevel;
+  }
+
+  get sounds(): GridSound[] {
+    return this.beat.sounds;
+  }
+
+  get measures(): Measure[] {
+    return this.beat.measures;
+  }
+
+  get columnsPerMeasure(): number {
+    return this.beat.columnsPerMeasure;
+  }
+
+  get columnsPerNote(): number {
+    return this.beat.divisionLevel / this.beat.timeSignature.noteType;
+  }
 
   constructor() {
     this.beat = this.generateTestBeat();
   }
 
-  generateTestBeat(): Beat {
-    const timeSignature = new TimeSignature(5, 4);
-    const divisionLevel = 32;
+  getSoundByRow(row: number): GridSound {
+    return this.beat.sounds[row];
+  }
+
+  private generateTestBeat(): Beat {
+    const timeSignature = new TimeSignature(4, 4);
+    const divisionLevel = 16;
     const columnsPerMeasure = this.calculateColumnsPerMeasure(timeSignature, divisionLevel);
     return <Beat> {
       id: 1,

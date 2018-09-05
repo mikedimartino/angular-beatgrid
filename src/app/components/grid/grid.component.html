@@ -1,6 +1,6 @@
-<p><strong>Time signature:</strong> {{ beatService.beat.timeSignature.notesPerMeasure }}/{{ beatService.beat.timeSignature.noteType }}</p>
-<p><b>Division level:</b> {{ beatService.beat.divisionLevel }}th</p>
-<p>Tempo: <input type="number" [(ngModel)]="beatService.beat.tempo" (ngModelChange)="onTempoChanged()"></p>
+<p><strong>Time signature:</strong> {{ beatService.timeSignature.notesPerMeasure }}/{{ beatService.timeSignature.noteType }}</p>
+<p><b>Division level:</b> {{ beatService.divisionLevel }}th</p>
+<p>Tempo: <input type="number" [(ngModel)]="beatService.tempo" (ngModelChange)="onTempoChanged()"></p>
 
 <div>
   <button (click)="togglePlayback()">
@@ -11,7 +11,7 @@
 <div class="grid-and-sounds-wrapper">
   <div>
     <div class="sounds">
-      <div *ngFor="let sound of beatService.beat.sounds"
+      <div *ngFor="let sound of beatService.sounds"
            (click)="onSoundClicked(sound)">
         {{ sound.name }}
       </div>

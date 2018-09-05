@@ -1,7 +1,7 @@
 export class GridSound {
-  id: number;
-  name: string;
-  filePath: string;
+  readonly id: number;
+  readonly name: string;
+  readonly filePath: string;
 
   constructor(id: number, name: string, filePath: string) {
     this.id = id;
