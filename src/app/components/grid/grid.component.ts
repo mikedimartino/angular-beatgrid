@@ -1,11 +1,17 @@
-import { Component, OnInit } from '@angular/core';
+import {Component, OnDestroy, OnInit} from '@angular/core';
 import {GridSquare} from '../../shared/models/grid-square.model';
 import {GridSound} from '../../shared/models/grid-sound.model';
 import {PlaybackService} from '../../services/playback.service';
 import {BeatService} from '../../services/beat.service';
+import {Subscription} from 'rxjs/index';
 
 const wholeNoteWidth = 32 * 16;
 const noteMargin = 1;
+
+export interface DivisionLevel {
+  value: number;
+  viewValue: string;
+}
 
 @Component({
   selector: 'app-grid',
@@ -15,10 +21,19 @@ const noteMargin = 1;
     PlaybackService
   ]
 })
-export class GridComponent implements OnInit {
+export class GridComponent implements OnInit, OnDestroy {
   isPlaying = false;
   noteWidth: number;
   gridWidth: number;
+  divisionLevels: DivisionLevel[] = [
+    { value: 2, viewValue: 'Half' },
+    { value: 4, viewValue: 'Quarter' },
+    { value: 8, viewValue: 'Eighth' },
+    { value: 16, viewValue: '16th' },
+    { value: 32, viewValue: '32nd' },
+    { value: 64, viewValue: '64th' }
+  ];
+  beatChangedSubscription: Subscription;
 
   constructor(public beatService: BeatService,
               public playbackService: PlaybackService) {
@@ -26,7 +41,13 @@ export class GridComponent implements OnInit {
 
   ngOnInit() {
     this.calculateWidths();
-    // TODO: Subscribe to an event for when beat changes to re-calculate widths
+    this.beatChangedSubscription = this.beatService.getBeatChangedObservable().subscribe(() => {
+      this.calculateWidths();
+    });
+  }
+
+  ngOnDestroy() {
+    this.beatChangedSubscription.unsubscribe();
   }
 
   isBeatColumn(column: number) {
@@ -62,12 +83,17 @@ export class GridComponent implements OnInit {
     this.playbackService.setActiveColumn(column);
   }
 
-  onTempoChanged() {
+  onTempoChanged(value: number) {
+    this.beatService.setTempo(value);
     this.playbackService.updateColumnDuration();
   }
 
   onChangeMeasure(previous = false) {
     this.playbackService.changeMeasure(previous);
+  }
+
+  onChangeDivisionLevel(value: number) {
+    this.beatService.setDivisionLevel(value);
   }
 
   private calculateWidths(): void {

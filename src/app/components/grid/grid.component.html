@@ -1,6 +1,19 @@
-<p><strong>Time signature:</strong> {{ beatService.timeSignature.notesPerMeasure }}/{{ beatService.timeSignature.noteType }}</p>
+<p>
+  <strong>Time signature:</strong>{{ beatService.timeSignature.notesPerMeasure }}/{{ beatService.timeSignature.noteType }}
+</p>
+
 <p><b>Division level:</b> {{ beatService.divisionLevel }}th</p>
-<p>Tempo: <input type="number" [(ngModel)]="beatService.tempo" (ngModelChange)="onTempoChanged()"></p>
+
+<mat-form-field>
+  <mat-select [value]="beatService.divisionLevel"
+              (selectionChange)="onChangeDivisionLevel($event.value)">
+    <mat-option *ngFor="let divisionLevel of divisionLevels" [value]="divisionLevel.value">
+      {{ divisionLevel.viewValue }}
+    </mat-option>
+  </mat-select>
+</mat-form-field>
+
+<p>Tempo: <input type="number" [value]="beatService.tempo" (input)="onTempoChanged($event.target.value)"></p>
 
 <div>
   <button (click)="togglePlayback()">

@@ -3,6 +3,7 @@ import {GridSound} from '../shared/models/grid-sound.model';
 import {BeatService} from './beat.service';
 import {Measure} from '../shared/models/measure.model';
 import {PlaybackState} from '../shared/models/playback-state.model';
+import {Subscription} from 'rxjs/index';
 
 const schedulerFrequencyMs = 50;
 
@@ -16,6 +17,7 @@ export class PlaybackService {
   private lastColumnPlayed = 0;
   private lastColumnPlaybackTime: number;
   private state: PlaybackState = <PlaybackState>{};
+  private beatChangedSubscription: Subscription;
 
   get activeColumn(): number {
     return this.state.activeColumn;
@@ -35,13 +37,12 @@ export class PlaybackService {
     this.state.currentMeasure = this.beatService.measures[0];
     this.state.currentMeasureIndex = 0;
 
-    this.activeSoundsByMeasureColumn = [];
-    for (let m = 0; m < this.beatService.measures.length; m++) {
-      this.activeSoundsByMeasureColumn[m] = [];
-      for (let c = 0; c < this.beatService.columnsPerMeasure; c++) {
-        this.activeSoundsByMeasureColumn[m][c] = [];
-      }
-    }
+    this.initActiveSounds();
+
+    this.beatChangedSubscription = this.beatService.getBeatChangedObservable().subscribe(() => {
+      this.updateActiveSounds();
+      this.updateColumnDuration();
+    });
   }
 
   playSound(soundId: number, timeMs = 0) {
@@ -52,8 +53,8 @@ export class PlaybackService {
     source.start(timeMs / 1000);
   }
 
-  setColumnSoundActive(column: number, row: number, active: boolean) {
-    const activeSoundsColumn = this.activeSoundsByMeasureColumn[this.currentMeasureIndex][column];
+  setColumnSoundActive(column: number, row: number, active: boolean, measureIndex = this.currentMeasureIndex) {
+    const activeSoundsColumn = this.activeSoundsByMeasureColumn[measureIndex][column];
     const soundId = this.beatService.getSoundByRow(row).id;
     if (active) {
       activeSoundsColumn.push(soundId);
@@ -92,6 +93,27 @@ export class PlaybackService {
 
   updateColumnDuration() {
     this.columnDurationMs = 60000 / (this.beatService.tempo * this.beatService.columnsPerNote);
+  }
+
+  initActiveSounds() {
+    this.activeSoundsByMeasureColumn = [];
+    for (let m = 0; m < this.beatService.measures.length; m++) {
+      this.activeSoundsByMeasureColumn[m] = [];
+      for (let c = 0; c < this.beatService.columnsPerMeasure; c++) {
+        this.activeSoundsByMeasureColumn[m][c] = [];
+      }
+    }
+  }
+
+  updateActiveSounds() {
+    this.initActiveSounds();
+    for (let m = 0; m < this.beatService.measures.length; m++) {
+      this.beatService.measures[m].squares.forEach(row => {
+        row.forEach(square => {
+          this.setColumnSoundActive(square.column, square.row, square.on, m);
+        });
+      });
+    }
   }
 
   // Schedules column to be played (if necessary)
