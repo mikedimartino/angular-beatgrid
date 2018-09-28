@@ -26,6 +26,7 @@
 }
 
 .square {
+  cursor: pointer;
   float: left;
   font-size: 8px;
   height: 32px;
@@ -35,9 +36,13 @@
   background: darkgray;
 }
 
+.square:hover {
+  box-shadow: 0 0 5px black;
+}
+
+
 .column-footer {
   background: inherit;
-  cursor: pointer;
   font-size: 14px;
   height: 16px;
   text-align: center;
@@ -58,4 +63,14 @@
 
 .active-square {
   background: red;
+}
+
+.noselect {
+  -webkit-touch-callout: none; /* iOS Safari */
+  -webkit-user-select: none; /* Safari */
+  -khtml-user-select: none; /* Konqueror HTML */
+  -moz-user-select: none; /* Firefox */
+  -ms-user-select: none; /* Internet Explorer/Edge */
+  user-select: none; /* Non-prefixed version, currently
+                                  supported by Chrome and Opera */
 }

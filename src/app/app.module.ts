@@ -8,13 +8,15 @@ import {FormsModule} from '@angular/forms';
 import {BrowserAnimationsModule} from '@angular/platform-browser/animations';
 import {MatSelectModule} from '@angular/material/select';
 import {MatDialogModule} from '@angular/material/dialog';
-import {OverlayContainer} from '@angular/cdk/overlay';
-
+import { EditTimeSignatureComponent } from './components/edit-time-signature/edit-time-signature.component';
+import { NoteTypeDropdownComponent } from './components/note-type-dropdown/note-type-dropdown.component';
 
 @NgModule({
   declarations: [
     AppComponent,
-    GridComponent
+    GridComponent,
+    EditTimeSignatureComponent,
+    NoteTypeDropdownComponent
   ],
   imports: [
     BrowserAnimationsModule,
@@ -24,6 +26,7 @@ import {OverlayContainer} from '@angular/cdk/overlay';
     MatSelectModule
   ],
   providers: [BeatService],
-  bootstrap: [AppComponent]
+  bootstrap: [AppComponent],
+  entryComponents: [EditTimeSignatureComponent]
 })
 export class AppModule { }

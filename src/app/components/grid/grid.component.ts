@@ -1,9 +1,11 @@
-import {Component, OnDestroy, OnInit} from '@angular/core';
+import {Component, HostListener, OnDestroy, OnInit} from '@angular/core';
 import {GridSquare} from '../../shared/models/grid-square.model';
 import {GridSound} from '../../shared/models/grid-sound.model';
 import {PlaybackService} from '../../services/playback.service';
 import {BeatService} from '../../services/beat.service';
 import {Subscription} from 'rxjs/index';
+import {MatDialog, MatDialogConfig} from '@angular/material';
+import {EditTimeSignatureComponent} from '../edit-time-signature/edit-time-signature.component';
 
 const wholeNoteWidth = 32 * 16;
 const noteMargin = 1;
@@ -34,9 +36,11 @@ export class GridComponent implements OnInit, OnDestroy {
     { value: 64, viewValue: '64th' }
   ];
   beatChangedSubscription: Subscription;
+  squareMouseDown = false;
 
   constructor(public beatService: BeatService,
-              public playbackService: PlaybackService) {
+              public playbackService: PlaybackService,
+              private dialog: MatDialog) {
   }
 
   ngOnInit() {
@@ -70,9 +74,24 @@ export class GridComponent implements OnInit, OnDestroy {
     }
   }
 
-  onSquareClicked(square: GridSquare) {
+  onSquareMouseDown(square: GridSquare, event: MouseEvent) {
+    if (event.button !== 0) {
+      return;
+    }
     square.toggle();
     this.playbackService.setColumnSoundActive(square.column, square.row, square.on);
+    this.squareMouseDown = true;
+  }
+
+  onSquareMouseEnter(square: GridSquare) {
+    if (this.squareMouseDown) {
+      square.on = true;
+      this.playbackService.setColumnSoundActive(square.column, square.row, true);
+    }
+  }
+
+  @HostListener('window:mouseup') onMouseUp() {
+    this.squareMouseDown = false;
   }
 
   onSoundClicked(sound: GridSound) {
@@ -94,6 +113,11 @@ export class GridComponent implements OnInit, OnDestroy {
 
   onChangeDivisionLevel(value: number) {
     this.beatService.setDivisionLevel(value);
+  }
+
+  openDialog() {
+    const dialogConfig = new MatDialogConfig();
+    this.dialog.open(EditTimeSignatureComponent, dialogConfig);
   }
 
   private calculateWidths(): void {

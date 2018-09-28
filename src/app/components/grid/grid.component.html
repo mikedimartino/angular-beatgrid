@@ -1,5 +1,5 @@
-<p>
-  <strong>Time signature:</strong>{{ beatService.timeSignature.notesPerMeasure }}/{{ beatService.timeSignature.noteType }}
+<p (click)="openDialog()">
+  <strong>Time signature:</strong> {{ beatService.timeSignature.notesPerMeasure }}/{{ beatService.timeSignature.noteType }}
 </p>
 
 <p><b>Division level:</b> {{ beatService.divisionLevel }}th</p>
@@ -25,6 +25,7 @@
   <div>
     <div class="sounds">
       <div *ngFor="let sound of beatService.sounds"
+           class="noselect"
            (click)="onSoundClicked(sound)">
         {{ sound.name }}
       </div>
@@ -34,7 +35,8 @@
            style.width="{{ gridWidth + 'px' }}">
         <div *ngFor="let square of row"
              class="square"
-             (click)="onSquareClicked(square)"
+             (mousedown)="onSquareMouseDown(square, $event)"
+             (mouseenter)="onSquareMouseEnter(square)"
              style.width="{{ noteWidth + 'px' }}"
              [class.beat-square]="isBeatColumn(square.column)"
              [class.active-square]="square.on"
@@ -45,7 +47,7 @@
       <div style="clear:both;"></div>
       <div *ngIf="playbackService.currentMeasure.squares.length > 0">
         <div *ngFor="let square of playbackService.currentMeasure.squares[0]; let i = index"
-             class="square column-footer"
+             class="square column-footer noselect"
              [class.active-column-footer]="playbackService.activeColumn === i"
              style.width="{{ noteWidth + 'px' }}"
              [innerHtml]="getColumnFooter(i)"

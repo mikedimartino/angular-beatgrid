@@ -5,15 +5,16 @@ import {Beat} from '../shared/models/beat.model';
 import {GridSound} from '../shared/models/grid-sound.model';
 import {Observable, Subject} from 'rxjs/index';
 
+const soundPathPrefix = 'assets/sounds/musicradar-drum-samples/Drum Kits/Kurzweil Kit 01/';
 export const mockSounds = [
-  new GridSound(1, 'hihat', 'assets/sounds/hihat.wav'),
-  new GridSound(2, 'snare', 'assets/sounds/snare.mp3'),
-  new GridSound(3, 'kick', 'assets/sounds/kick.mp3'),
-  new GridSound(4, 'hihat', 'assets/sounds/hihat.wav'),
-  new GridSound(5, 'hihat', 'assets/sounds/hihat.wav'),
-  new GridSound(6, 'hihat', 'assets/sounds/hihat.wav'),
-  new GridSound(7, 'hihat', 'assets/sounds/hihat.wav'),
-  new GridSound(8, 'hihat', 'assets/sounds/hihat.wav'),
+  new GridSound(1, 'closed hihat', soundPathPrefix + 'CYCdh_Kurz01-ClHat.wav'),
+  new GridSound(2, 'open hihat', soundPathPrefix + 'CYCdh_Kurz01-OpHat01.wav'),
+  new GridSound(3, 'ride', soundPathPrefix + 'CYCdh_Kurz01-Ride01.wav'),
+  new GridSound(4, 'crash', soundPathPrefix + 'CYCdh_Kurz01-Crash01.wav'),
+  new GridSound(5, 'tom 1', soundPathPrefix + 'CYCdh_Kurz01-Tom02.wav'),
+  new GridSound(6, 'tom 2', soundPathPrefix + 'CYCdh_Kurz01-Tom04.wav'),
+  new GridSound(7, 'snare', soundPathPrefix + 'CYCdh_Kurz01-Snr01.wav'),
+  new GridSound(8, 'kick', soundPathPrefix + 'CYCdh_Kurz01-Kick01.wav')
 ];
 
 @Injectable()

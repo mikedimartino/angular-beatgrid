@@ -1,6 +1,5 @@
 export class GridSquare {
-  private _on: boolean;
-  get on() { return this._on; }
+  on: boolean;
 
   readonly row: number;
   readonly column: number;
@@ -8,10 +7,10 @@ export class GridSquare {
   constructor(row: number, column: number, on = false) {
     this.row = row;
     this.column = column;
-    this._on = on;
+    this.on = on;
   }
 
   toggle() {
-    this._on = !this._on;
+    this.on = !this.on;
   }
 }
