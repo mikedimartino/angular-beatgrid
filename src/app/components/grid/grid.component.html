@@ -56,16 +56,21 @@
         </div>
       </div>
     </div>
-    <div class="change-measure-arrows">
-      <button (click)="onPreviousMeasure(true)"> < </button>
+
+    <div style="clear:both"></div>
+
+    <div class="measure-buttons">
+      <button (click)="onPreviousMeasure()"> < </button>
       <button *ngFor="let measure of beatService.measures; let index = index"
+              [class.active-measure-button] = "index === playbackService.currentMeasureIndex"
               (click)="onChangeMeasure(index)">
         {{ index }}
       </button>
       <button (click)="onNextMeasure()"> > </button>
-      <p>Measure: {{ playbackService.currentMeasureIndex }}</p>
+    </div>
+    <div class="add-measure">
       <button (click)="onAddMeasure()">Add Measure</button>
     </div>
-    <div style="clear:both"></div>
+
   </div>
 </div>
