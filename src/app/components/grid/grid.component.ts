@@ -9,10 +9,12 @@ import {EditTimeSignatureComponent} from '../edit-time-signature/edit-time-signa
 
 const wholeNoteWidth = 32 * 16;
 const noteMargin = 1;
+const longPressMs = 500;
 
-export interface DivisionLevel {
-  value: number;
-  viewValue: string;
+enum MouseContext {
+  Default,
+  FillSquare,
+  EraseSquare
 }
 
 @Component({
@@ -24,19 +26,12 @@ export interface DivisionLevel {
   ]
 })
 export class GridComponent implements OnInit, OnDestroy {
-  isPlaying = false;
   noteWidth: number;
   gridWidth: number;
-  divisionLevels: DivisionLevel[] = [
-    { value: 2, viewValue: 'Half' },
-    { value: 4, viewValue: 'Quarter' },
-    { value: 8, viewValue: 'Eighth' },
-    { value: 16, viewValue: '16th' },
-    { value: 32, viewValue: '32nd' },
-    { value: 64, viewValue: '64th' }
-  ];
   beatChangedSubscription: Subscription;
-  squareMouseDown = false;
+  mouseContextEnum = MouseContext;
+  mouseContext = MouseContext.Default;
+  squareLongPressTimeoutHandler: any;
 
   constructor(public beatService: BeatService,
               public playbackService: PlaybackService,
@@ -66,8 +61,7 @@ export class GridComponent implements OnInit, OnDestroy {
   }
 
   togglePlayback() {
-    this.isPlaying = !this.isPlaying;
-    if (this.isPlaying) {
+    if (!this.playbackService.isPlaying) {
       this.playbackService.startPlayback();
     } else {
       this.playbackService.stopPlayback();
@@ -78,20 +72,36 @@ export class GridComponent implements OnInit, OnDestroy {
     if (event.button !== 0) {
       return;
     }
+
     square.toggle();
+
+    clearTimeout(this.squareLongPressTimeoutHandler);
+    this.squareLongPressTimeoutHandler = setTimeout(() => {
+      console.log('long press');
+      this.mouseContext = square.on ? MouseContext.FillSquare : MouseContext.EraseSquare;
+      console.log('mouseContext! : ' + this.mouseContext);
+    }, longPressMs);
+
     this.playbackService.setColumnSoundActive(square.column, square.row, square.on);
-    this.squareMouseDown = true;
   }
 
   onSquareMouseEnter(square: GridSquare) {
-    if (this.squareMouseDown) {
+    if (this.mouseContext === MouseContext.FillSquare) {
       square.on = true;
       this.playbackService.setColumnSoundActive(square.column, square.row, true);
+    } else if (this.mouseContext === MouseContext.EraseSquare) {
+      square.on = false;
+      this.playbackService.setColumnSoundActive(square.column, square.row, false);
     }
   }
 
+  onSquareMouseLeave(square: GridSquare) {
+    clearTimeout(this.squareLongPressTimeoutHandler);
+  }
+
   @HostListener('window:mouseup') onMouseUp() {
-    this.squareMouseDown = false;
+    clearTimeout(this.squareLongPressTimeoutHandler);
+    this.mouseContext = MouseContext.Default;
   }
 
   onSoundClicked(sound: GridSound) {
@@ -107,17 +117,34 @@ export class GridComponent implements OnInit, OnDestroy {
     this.playbackService.updateColumnDuration();
   }
 
-  onChangeMeasure(previous = false) {
-    this.playbackService.changeMeasure(previous);
+  onAddMeasure() {
+    this.beatService.addMeasure();
   }
 
+  onChangeMeasure(index: number) {
+    this.playbackService.changeMeasure(index);
+  }
+
+  onPreviousMeasure() {
+    this.playbackService.nextMeasure(true);
+  }
+
+  onNextMeasure() {
+    this.playbackService.nextMeasure();
+  }
   onChangeDivisionLevel(value: number) {
     this.beatService.setDivisionLevel(value);
   }
 
   openDialog() {
     const dialogConfig = new MatDialogConfig();
-    this.dialog.open(EditTimeSignatureComponent, dialogConfig);
+    dialogConfig.data = {
+      timeSignature: this.beatService.timeSignature
+    };
+    const dialogRef = this.dialog.open(EditTimeSignatureComponent, dialogConfig);
+    dialogRef.afterClosed().subscribe(timeSignature => {
+      this.beatService.setTimeSignature(timeSignature);
+    });
   }
 
   private calculateWidths(): void {

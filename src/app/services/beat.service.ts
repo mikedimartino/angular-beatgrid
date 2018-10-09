@@ -1,9 +1,9 @@
 import { Injectable } from '@angular/core';
-import {TimeSignature} from '../shared/models/time-signature.model';
-import {Measure} from '../shared/models/measure.model';
-import {Beat} from '../shared/models/beat.model';
-import {GridSound} from '../shared/models/grid-sound.model';
-import {Observable, Subject} from 'rxjs/index';
+import { TimeSignature } from '../shared/models/time-signature.model';
+import { Measure } from '../shared/models/measure.model';
+import { Beat } from '../shared/models/beat.model';
+import { GridSound } from '../shared/models/grid-sound.model';
+import { Observable, Subject } from 'rxjs/index';
 
 const soundPathPrefix = 'assets/sounds/musicradar-drum-samples/Drum Kits/Kurzweil Kit 01/';
 export const mockSounds = [
@@ -75,12 +75,27 @@ export class BeatService {
     this.beat.tempo = value;
   }
 
+  setTimeSignature(value: TimeSignature) {
+    this.beat.timeSignature = value;
+    this.beat.columnsPerMeasure = this.calculateColumnsPerMeasure();
+    this.beat.measures = this.beat.measures.map(() => {
+      return new Measure(this.sounds.length, this.beat.columnsPerMeasure);
+    });
+    this.onBeatChanged();
+  }
+
   getSoundByRow(row: number): GridSound {
     return this.beat.sounds[row];
   }
 
   getBeatChangedObservable(): Observable<any> {
     return this.beatChangedSubject.asObservable();
+  }
+
+  addMeasure() {
+    const measure = new Measure(this.beat.sounds.length, this.columnsPerMeasure);
+    this.beat.measures.push(new Measure(this.beat.sounds.length, this.columnsPerMeasure));
+    this.onBeatChanged();
   }
 
   // TODO: Update name of this and related properties, since this is only for layout changes (and not tempo).
@@ -100,7 +115,7 @@ export class BeatService {
       divisionLevel,
       sounds: mockSounds,
       measures: [
-        new Measure(mockSounds.length, columnsPerMeasure),
+        // new Measure(mockSounds.length, columnsPerMeasure),
         new Measure(mockSounds.length, columnsPerMeasure)
       ]
     };

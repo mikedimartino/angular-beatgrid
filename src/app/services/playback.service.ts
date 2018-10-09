@@ -31,6 +31,10 @@ export class PlaybackService {
     return this.state.currentMeasure;
   }
 
+  get isPlaying(): boolean {
+    return this.state.isPlaying;
+  }
+
   constructor(private beatService: BeatService) {
     this.fetchSounds().then(() => console.log('Finished loading sounds.'));
     this.updateColumnDuration();
@@ -42,6 +46,7 @@ export class PlaybackService {
     this.beatChangedSubscription = this.beatService.getBeatChangedObservable().subscribe(() => {
       this.updateActiveSounds();
       this.updateColumnDuration();
+      this.state.currentMeasure = this.beatService.measures[this.currentMeasureIndex];
     });
   }
 
@@ -56,7 +61,7 @@ export class PlaybackService {
   setColumnSoundActive(column: number, row: number, active: boolean, measureIndex = this.currentMeasureIndex) {
     const activeSoundsColumn = this.activeSoundsByMeasureColumn[measureIndex][column];
     const soundId = this.beatService.getSoundByRow(row).id;
-    if (active) {
+    if (active && activeSoundsColumn.indexOf(soundId) < 0) {
       activeSoundsColumn.push(soundId);
     } else {
       const index = activeSoundsColumn.indexOf(soundId);
@@ -67,28 +72,38 @@ export class PlaybackService {
   }
 
   startPlayback() {
+    this.state.isPlaying = true;
     this.lastColumnPlaybackTime = undefined;
     this.tryScheduleColumn();
     this.playbackInterval = setInterval(() => this.tryScheduleColumn(), schedulerFrequencyMs);
   }
 
   stopPlayback() {
+    this.state.isPlaying = false;
     clearInterval(this.playbackInterval);
   }
 
-  changeMeasure(previous = false) {
+  nextMeasure(previous = false) {
     const increment = previous ? -1 : 1;
-    if (this.state.currentMeasureIndex === -1) {
-      this.state.currentMeasureIndex = 0;
-    }
-    this.state.currentMeasureIndex = Math.abs((this.currentMeasureIndex + increment) % this.beatService.measures.length);
+    let index = Math.max(this.currentMeasureIndex, 0);
+    index = Math.abs((index + increment) % this.beatService.measures.length);
+    this.changeMeasure(index);
+  }
+
+  changeMeasure(index: number) {
+    this.state.currentMeasureIndex = index;
     this.state.currentMeasure = this.beatService.measures[this.currentMeasureIndex];
     this.setActiveColumn(0);
   }
 
   setActiveColumn(column: number) {
-    this.lastColumnPlayed = Math.abs((column - 1) % this.beatService.columnsPerMeasure);
+    this.lastColumnPlayed = column; // - 1;
     this.state.activeColumn = column;
+
+    if (this.isPlaying) {
+      this.stopPlayback();
+      this.startPlayback();
+    }
   }
 
   updateColumnDuration() {

@@ -1,5 +1,5 @@
 <mat-form-field>
-  <mat-select [value]="selectedNoteType"
+  <mat-select [value]="selection"
               (selectionChange)="onChangeNoteType($event.value)">
     <mat-option *ngFor="let noteType of noteTypes" [value]="noteType.value">
       {{ noteType.viewValue }}

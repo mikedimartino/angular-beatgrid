@@ -1,11 +1,14 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, EventEmitter, Input, Output } from '@angular/core';
 
 @Component({
   selector: 'app-note-type-dropdown',
   templateUrl: './note-type-dropdown.component.html',
   styleUrls: ['./note-type-dropdown.component.scss']
 })
-export class NoteTypeDropdownComponent implements OnInit {
+export class NoteTypeDropdownComponent {
+  @Input() selection: number;
+  @Output() selectionChange = new EventEmitter<number>();
+
   noteTypes = [
     { value: 2, viewValue: 'Half' },
     { value: 4, viewValue: 'Quarter' },
@@ -15,9 +18,7 @@ export class NoteTypeDropdownComponent implements OnInit {
     { value: 64, viewValue: '64th' }
   ];
 
-  constructor() { }
-
-  ngOnInit() {
+  onChangeNoteType(value: number) {
+    this.selectionChange.emit(value);
   }
-
 }

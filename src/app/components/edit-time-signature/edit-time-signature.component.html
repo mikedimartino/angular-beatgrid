@@ -1,5 +1,13 @@
 <h2 mat-dialog-title>Change Time Signature</h2>
 <mat-dialog-content>
-  <p>Notes per measure: <input type="text"/></p>
-  <p>Note type: <input type="text"/></p>
+  <p>Notes per measure: <input type="number" [(ngModel)]="timeSignature.notesPerMeasure" /></p>
+  <p>
+    Note type:
+    <app-note-type-dropdown [selection]="timeSignature.noteType"
+                            (selectionChange)="onChangeNoteType($event)"></app-note-type-dropdown>
+  </p>
 </mat-dialog-content>
+<mat-dialog-actions>
+  <button class="mat-raised-button"(click)="cancel()">Cancel</button>
+  <button class="mat-raised-button mat-primary"(click)="save()">Save</button>
+</mat-dialog-actions>
