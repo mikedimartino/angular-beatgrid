@@ -1,8 +1,7 @@
 export class GridSquare {
   on: boolean;
-
-  readonly row: number;
-  readonly column: number;
+  row: number;
+  column: number;
 
   constructor(row: number, column: number, on = false) {
     this.row = row;

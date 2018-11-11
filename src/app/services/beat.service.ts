@@ -4,6 +4,7 @@ import { Measure } from '../shared/models/measure.model';
 import { Beat } from '../shared/models/beat.model';
 import { GridSound } from '../shared/models/grid-sound.model';
 import { Observable, Subject } from 'rxjs/index';
+import {ApiService} from './api.service';
 
 const soundPathPrefix = 'assets/sounds/musicradar-drum-samples/Drum Kits/Kurzweil Kit 01/';
 export const mockSounds = [
@@ -53,7 +54,7 @@ export class BeatService {
     return this.beat.divisionLevel / this.beat.timeSignature.noteType;
   }
 
-  constructor() {
+  constructor(private apiService: ApiService) {
     this.beat = this.generateTestBeat();
   }
 
@@ -94,8 +95,20 @@ export class BeatService {
 
   addMeasure() {
     const measure = new Measure(this.beat.sounds.length, this.columnsPerMeasure);
-    this.beat.measures.push(new Measure(this.beat.sounds.length, this.columnsPerMeasure));
+    this.beat.measures.push(measure);
     this.onBeatChanged();
+  }
+
+  save(): Observable<Beat> {
+    return this.apiService.createBeat(this.beat);
+  }
+
+  new() {
+    console.log('new() called!');
+  }
+
+  delete() {
+    console.log('delete() called!');
   }
 
   // TODO: Update name of this and related properties, since this is only for layout changes (and not tempo).

@@ -1,10 +1,7 @@
-import {GridSquare} from './grid-square.model';
+import { GridSquare } from './grid-square.model';
 
 export class Measure {
-  private _squares: GridSquare[][];
-  get squares() {
-    return this._squares;
-  }
+  squares: GridSquare[][];
 
   get numColumns() {
     if (!this.squares || !this.squares.length) {
@@ -13,14 +10,40 @@ export class Measure {
     return this.squares[0].length;
   }
 
-  constructor(rows: number, columns: number) {
-    this._squares = [];
+  constructor(rows = 0, columns = 0) {
+    this.squares = [];
     for (let r = 0; r < rows; r++) {
-      this._squares[r] = [];
+      this.squares[r] = [];
       for (let c = 0; c < columns; c++) {
-        this._squares[r][c] = new GridSquare(r, c);
+        this.squares[r][c] = new GridSquare(r, c);
       }
     }
+  }
+
+  static fromSquares(squares: GridSquare[][]): Measure {
+    const measure = new Measure();
+    measure.squares = squares;
+    return measure;
+  }
+
+  static toBitStringArray(measure: Measure): string[] {
+    const bitStrings: string[] = [];
+    measure.squares.forEach(row => {
+      bitStrings.push(row.map(square => square.on ? '1' : '0').join(''));
+    });
+    return bitStrings;
+  }
+
+  static fromBitStringArray(bitStrings: string[]): Measure {
+    const squares: GridSquare[][] = [];
+    bitStrings.forEach((bitString, rowIndex) => {
+      const row: GridSquare[] = [];
+      bitString.split('').forEach((bit, colIndex) => {
+        row.push(new GridSquare(rowIndex, colIndex, bit === '1'));
+      });
+      squares.push(row);
+    });
+    return Measure.fromSquares(squares);
   }
 
   // TODO: Maybe add check to see if any notes would be lost
@@ -31,7 +54,7 @@ export class Measure {
     }
 
     const factor = this.numColumns / newColumnCount;
-    this._squares = this.squares.map(row => {
+    this.squares = this.squares.map(row => {
       const newRow = [];
       let columnIndex = 0;
       row.forEach(square => {
@@ -50,7 +73,7 @@ export class Measure {
     }
 
     const factor = newColumnCount / this.numColumns;
-    this._squares = this.squares.map(row => {
+    this.squares = this.squares.map(row => {
       const newRow = [];
       let columnIndex = 0;
       row.forEach(square => {

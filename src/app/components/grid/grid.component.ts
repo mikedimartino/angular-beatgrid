@@ -6,6 +6,7 @@ import {BeatService} from '../../services/beat.service';
 import {Subscription} from 'rxjs/index';
 import {MatDialog, MatDialogConfig} from '@angular/material';
 import {EditTimeSignatureComponent} from '../edit-time-signature/edit-time-signature.component';
+import {ApiService} from '../../services/api.service';
 
 const wholeNoteWidth = 32 * 16;
 const noteMargin = 1;
@@ -21,9 +22,7 @@ enum MouseContext {
   selector: 'app-grid',
   templateUrl: './grid.component.html',
   styleUrls: ['./grid.component.scss'],
-  providers: [
-    PlaybackService
-  ]
+  providers: []
 })
 export class GridComponent implements OnInit, OnDestroy {
   noteWidth: number;
@@ -35,7 +34,8 @@ export class GridComponent implements OnInit, OnDestroy {
 
   constructor(public beatService: BeatService,
               public playbackService: PlaybackService,
-              private dialog: MatDialog) {
+              private dialog: MatDialog,
+              private apiService: ApiService) {
   }
 
   ngOnInit() {
@@ -77,9 +77,7 @@ export class GridComponent implements OnInit, OnDestroy {
 
     clearTimeout(this.squareLongPressTimeoutHandler);
     this.squareLongPressTimeoutHandler = setTimeout(() => {
-      console.log('long press');
       this.mouseContext = square.on ? MouseContext.FillSquare : MouseContext.EraseSquare;
-      console.log('mouseContext! : ' + this.mouseContext);
     }, longPressMs);
 
     this.playbackService.setColumnSoundActive(square.column, square.row, square.on);
@@ -146,6 +144,20 @@ export class GridComponent implements OnInit, OnDestroy {
       this.beatService.setTimeSignature(timeSignature);
     });
   }
+
+  // TEMP
+  readBeats() {
+    this.apiService.readBeats().subscribe(beats => {
+      console.log(beats);
+    });
+  }
+
+  createBeat() {
+    this.beatService.save()
+      .subscribe(response => console.log('response: ', response));
+    // this.apiService.createBeat(this.beatService.beat);
+  }
+  // END TEMP
 
   private calculateWidths(): void {
     this.noteWidth = wholeNoteWidth / this.beatService.divisionLevel;

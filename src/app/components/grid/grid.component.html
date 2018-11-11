@@ -17,7 +17,16 @@
   <button (click)="togglePlayback()">
     {{ playbackService.isPlaying ? 'Pause' : 'Play' }}
   </button>
+  &nbsp;
+  <button (click)="readBeats()">Read Beats</button>
+  &nbsp;
+  <button (click)="createBeat()">Create Beat</button>
+  &nbsp;
 </div>
+
+<!--<div style="margin: 10px 0">-->
+  <!--<app-crud-toolbar></app-crud-toolbar>-->
+<!--</div>-->
 
 <div class="grid-and-sounds-wrapper">
   <div>
