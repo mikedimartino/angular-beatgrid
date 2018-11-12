@@ -94,3 +94,11 @@
   user-select: none; /* Non-prefixed version, currently
                                   supported by Chrome and Opera */
 }
+
+ul.beat-list li a {
+  cursor: pointer;
+
+  &:hover {
+    text-decoration: underline;
+  }
+}

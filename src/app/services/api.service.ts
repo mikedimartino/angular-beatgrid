@@ -17,12 +17,12 @@ export class ApiService {
   readBeats(): Observable<Beat[]> {
     return this.http.get<BeatDbRow[]>(API_URL + '/beats').pipe(
       map(rows => {
-        console.log('rows', rows);
         const beats: Beat[] = [];
         rows.forEach(row => {
           try {
             let beat = JSON.parse(row.json);
             beat = Beat.decompressFromStorage(beat);
+            beat.id = row.id;
             beats.push(beat);
           } catch (e) {
             console.error('Failed to parse beat: ', row);
@@ -38,6 +38,12 @@ export class ApiService {
       authToken: 'allow4614',
       name: beat.name,
       json: JSON.stringify(Beat.compressForStorage(beat))
+    });
+  }
+
+  deleteBeat(id: number) {
+    this.http.delete(`${API_URL}/beats?id=${id}`).subscribe(response => {
+      console.log('delete', response);
     });
   }
 }

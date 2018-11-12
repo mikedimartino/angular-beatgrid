@@ -7,6 +7,7 @@ import {Subscription} from 'rxjs/index';
 import {MatDialog, MatDialogConfig} from '@angular/material';
 import {EditTimeSignatureComponent} from '../edit-time-signature/edit-time-signature.component';
 import {ApiService} from '../../services/api.service';
+import {Beat} from '../../shared/models/beat.model';
 
 const wholeNoteWidth = 32 * 16;
 const noteMargin = 1;
@@ -34,8 +35,7 @@ export class GridComponent implements OnInit, OnDestroy {
 
   constructor(public beatService: BeatService,
               public playbackService: PlaybackService,
-              private dialog: MatDialog,
-              private apiService: ApiService) {
+              private dialog: MatDialog) {
   }
 
   ngOnInit() {
@@ -145,19 +145,22 @@ export class GridComponent implements OnInit, OnDestroy {
     });
   }
 
-  // TEMP
-  readBeats() {
-    this.apiService.readBeats().subscribe(beats => {
-      console.log(beats);
-    });
+  onBeatClicked(id: number) {
+    this.beatService.selectBeat(id);
   }
 
-  createBeat() {
-    this.beatService.save()
-      .subscribe(response => console.log('response: ', response));
-    // this.apiService.createBeat(this.beatService.beat);
+  onDeleteBeatClicked(id: number) {
+    this.beatService.delete(id);
   }
-  // END TEMP
+
+  save() {
+    this.beatService.beat.name = 'Beat ' + Math.floor(Math.random() * 1000);
+    this.beatService.save();
+  }
+
+  new() {
+    this.beatService.new();
+  }
 
   private calculateWidths(): void {
     this.noteWidth = wholeNoteWidth / this.beatService.divisionLevel;

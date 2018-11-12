@@ -20,9 +20,12 @@ export const mockSounds = [
 
 @Injectable()
 export class BeatService {
-  private beat: Beat;
-  private beatChangedSubject = new Subject();
+  beat: Beat;
+  beats: Beat[] = [];
+  beatChangedSubject = new Subject();
+  isNew = false;
 
+  // TODO: Get rid of all of these getters and access beat directly?
   get tempo(): number {
     return this.beat.tempo;
   }
@@ -55,7 +58,22 @@ export class BeatService {
   }
 
   constructor(private apiService: ApiService) {
-    this.beat = this.generateTestBeat();
+    this.new();
+    this.apiService.readBeats().subscribe(beats => {
+      this.beats = beats;
+      if (beats && beats.length) {
+        this.selectBeat(beats[0].id);
+      }
+    });
+  }
+
+  selectBeat(id: number) {
+    const selectedBeat = this.beats.find(beat => beat.id === id);
+    if (selectedBeat) {
+      this.beat = selectedBeat;
+      this.isNew = false;
+      this.onBeatChanged();
+    }
   }
 
   setDivisionLevel(value: number): void {
@@ -99,16 +117,34 @@ export class BeatService {
     this.onBeatChanged();
   }
 
-  save(): Observable<Beat> {
-    return this.apiService.createBeat(this.beat);
+  save() {
+    if (this.isNew) {
+      this.isNew = false;
+      this.apiService.createBeat(this.beat).subscribe(response => {
+        this.beat.id = response.id;
+        this.beats.push(this.beat);
+      });
+    }
   }
 
   new() {
-    console.log('new() called!');
+    this.isNew = true;
+    this.beat = this.generateNewBeat();
+    this.onBeatChanged();
   }
 
-  delete() {
-    console.log('delete() called!');
+  delete(id: number) {
+    const index = this.beats.findIndex(b => b.id === id);
+    if (index < 0) {
+      return;
+    }
+    this.beats.splice(index, 1);
+    if (this.beats.length) {
+      this.selectBeat(this.beats[0].id);
+    } else {
+      this.new();
+    }
+    this.apiService.deleteBeat(id);
   }
 
   // TODO: Update name of this and related properties, since this is only for layout changes (and not tempo).
@@ -129,6 +165,23 @@ export class BeatService {
       sounds: mockSounds,
       measures: [
         // new Measure(mockSounds.length, columnsPerMeasure),
+        new Measure(mockSounds.length, columnsPerMeasure)
+      ]
+    };
+  }
+
+  private generateNewBeat(): Beat {
+    const timeSignature = new TimeSignature(4, 4);
+    const divisionLevel = 16;
+    const columnsPerMeasure = this.calculateColumnsPerMeasure(timeSignature, divisionLevel);
+    return <Beat> {
+      id: undefined,
+      name: 'New Beat',
+      tempo: 60,
+      timeSignature,
+      divisionLevel,
+      sounds: mockSounds,
+      measures: [
         new Measure(mockSounds.length, columnsPerMeasure)
       ]
     };

@@ -29,6 +29,6 @@ export class CrudToolbarComponent implements OnInit {
   }
 
   onDelete() {
-    this.beatService.delete();
+    this.beatService.delete(-1);
   }
 }

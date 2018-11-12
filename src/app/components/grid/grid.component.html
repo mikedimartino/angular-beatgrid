@@ -18,10 +18,8 @@
     {{ playbackService.isPlaying ? 'Pause' : 'Play' }}
   </button>
   &nbsp;
-  <button (click)="readBeats()">Read Beats</button>
-  &nbsp;
-  <button (click)="createBeat()">Create Beat</button>
-  &nbsp;
+  <button (click)="save()">Save</button>
+  <button (click)="new()">New</button>
 </div>
 
 <!--<div style="margin: 10px 0">-->
@@ -83,3 +81,13 @@
 
   </div>
 </div>
+
+<!-- All Beats: -->
+<h3>Beat: {{ beatService.beat.name }}</h3>
+<ul class="beat-list">
+  <li *ngFor="let beat of beatService.beats">
+    <a (click)="onBeatClicked(beat.id)">{{ beat.name }}</a>
+    &nbsp;
+    <button (click)="onDeleteBeatClicked(beat.id)">Delete</button>
+  </li>
+</ul>
