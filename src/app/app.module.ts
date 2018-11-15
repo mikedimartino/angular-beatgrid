@@ -14,6 +14,7 @@ import { NoteTypeDropdownComponent } from './components/note-type-dropdown/note-
 import { ApiService } from './services/api.service';
 import { PlaybackService } from './services/playback.service';
 import { CrudToolbarComponent } from './components/crud-toolbar/crud-toolbar.component';
+import { AwsService } from './services/aws.service';
 
 @NgModule({
   declarations: [
@@ -32,8 +33,9 @@ import { CrudToolbarComponent } from './components/crud-toolbar/crud-toolbar.com
     MatSelectModule
   ],
   providers: [
-    BeatService,
     ApiService,
+    AwsService,
+    BeatService,
     PlaybackService
   ],
   bootstrap: [AppComponent],
