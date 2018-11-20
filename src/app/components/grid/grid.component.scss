@@ -95,10 +95,25 @@
                                   supported by Chrome and Opera */
 }
 
-ul.beat-list li a {
+a {
   cursor: pointer;
 
   &:hover {
     text-decoration: underline;
   }
+}
+
+.username {
+  color: darkblue;
+  font-style: italic;
+  font-weight: bold;
+}
+
+.login-dialog {
+  padding: 0;
+}
+
+.time-signature {
+  cursor: pointer;
+  display: inline-block;
 }

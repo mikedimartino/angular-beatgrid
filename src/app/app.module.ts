@@ -7,14 +7,16 @@ import { GridComponent } from './components/grid/grid.component';
 import { BeatService } from './services/beat.service';
 import { FormsModule } from '@angular/forms';
 import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
+import { MatCardModule, MatInputModule, MatProgressSpinnerModule } from '@angular/material';
 import { MatSelectModule } from '@angular/material/select';
 import { MatDialogModule } from '@angular/material/dialog';
 import { EditTimeSignatureComponent } from './components/edit-time-signature/edit-time-signature.component';
 import { NoteTypeDropdownComponent } from './components/note-type-dropdown/note-type-dropdown.component';
 import { ApiService } from './services/api.service';
 import { PlaybackService } from './services/playback.service';
-import { CrudToolbarComponent } from './components/crud-toolbar/crud-toolbar.component';
 import { AwsService } from './services/aws.service';
+import { UserService } from './services/user.service';
+import { LoginComponent } from './components/login/login.component';
 
 @NgModule({
   declarations: [
@@ -22,7 +24,7 @@ import { AwsService } from './services/aws.service';
     GridComponent,
     EditTimeSignatureComponent,
     NoteTypeDropdownComponent,
-    CrudToolbarComponent
+    LoginComponent
   ],
   imports: [
     BrowserAnimationsModule,
@@ -30,15 +32,22 @@ import { AwsService } from './services/aws.service';
     FormsModule,
     HttpClientModule,
     MatDialogModule,
-    MatSelectModule
+    MatSelectModule,
+    MatCardModule,
+    MatProgressSpinnerModule,
+    MatInputModule
   ],
   providers: [
     ApiService,
     AwsService,
     BeatService,
-    PlaybackService
+    PlaybackService,
+    UserService
   ],
   bootstrap: [AppComponent],
-  entryComponents: [EditTimeSignatureComponent]
+  entryComponents: [
+    EditTimeSignatureComponent,
+    LoginComponent
+  ]
 })
 export class AppModule { }

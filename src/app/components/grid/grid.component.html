@@ -1,4 +1,14 @@
-<div (click)="openDialog()">
+<!-- TODO: Move this top nav section outside of grid component -->
+<div style="text-align:right">
+  <a *ngIf="!userService.isLoggedIn()" (click)="onLoginClicked()">Log In</a>
+  <span *ngIf="userService.isLoggedIn()">
+    Logged in as <span class="username">{{ userService.username }}</span>
+    &nbsp;|&nbsp;
+    <a (click)="userService.logOut()">Log out</a>
+  </span>
+</div>
+
+<div class="time-signature" (click)="openTsDialog()">
   <strong>Time signature:</strong> {{ beatService.timeSignature.notesPerMeasure }}/{{ beatService.timeSignature.noteType }}
 </div>
 
@@ -21,10 +31,6 @@
   <button (click)="save()">Save</button>
   <button (click)="new()">New</button>
 </div>
-
-<!--<div style="margin: 10px 0">-->
-  <!--<app-crud-toolbar></app-crud-toolbar>-->
-<!--</div>-->
 
 <div class="grid-and-sounds-wrapper">
   <div>

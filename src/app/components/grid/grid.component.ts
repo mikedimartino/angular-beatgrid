@@ -8,6 +8,8 @@ import {MatDialog, MatDialogConfig} from '@angular/material';
 import {EditTimeSignatureComponent} from '../edit-time-signature/edit-time-signature.component';
 import {ApiService} from '../../services/api.service';
 import {Beat} from '../../shared/models/beat.model';
+import { UserService } from '../../services/user.service';
+import { LoginComponent } from '../login/login.component';
 
 const wholeNoteWidth = 32 * 16;
 const noteMargin = 1;
@@ -35,6 +37,7 @@ export class GridComponent implements OnInit, OnDestroy {
 
   constructor(public beatService: BeatService,
               public playbackService: PlaybackService,
+              public userService: UserService,
               private dialog: MatDialog) {
   }
 
@@ -47,6 +50,15 @@ export class GridComponent implements OnInit, OnDestroy {
 
   ngOnDestroy() {
     this.beatChangedSubscription.unsubscribe();
+  }
+
+  onLoginClicked() {
+    const dialogConfig = new MatDialogConfig();
+    dialogConfig.data = {
+      timeSignature: this.beatService.timeSignature
+    };
+    dialogConfig.panelClass = 'no-padding';
+    this.dialog.open(LoginComponent, dialogConfig);
   }
 
   isBeatColumn(column: number) {
@@ -134,14 +146,16 @@ export class GridComponent implements OnInit, OnDestroy {
     this.beatService.setDivisionLevel(value);
   }
 
-  openDialog() {
+  openTsDialog() {
     const dialogConfig = new MatDialogConfig();
     dialogConfig.data = {
       timeSignature: this.beatService.timeSignature
     };
     const dialogRef = this.dialog.open(EditTimeSignatureComponent, dialogConfig);
     dialogRef.afterClosed().subscribe(timeSignature => {
-      this.beatService.setTimeSignature(timeSignature);
+      if (timeSignature) {
+        this.beatService.setTimeSignature(timeSignature);
+      }
     });
   }
 

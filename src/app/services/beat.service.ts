@@ -138,13 +138,16 @@ export class BeatService {
     if (index < 0) {
       return;
     }
-    this.beats.splice(index, 1);
-    if (this.beats.length) {
-      this.selectBeat(this.beats[0].id);
-    } else {
-      this.new();
-    }
-    this.apiService.deleteBeat(id);
+    this.apiService.deleteBeat(id).subscribe(response => {
+      this.beats.splice(index, 1);
+      if (this.beats.length) {
+        this.selectBeat(this.beats[0].id);
+      } else {
+        this.new();
+      }
+    }, error => {
+      console.log('Error:', error);
+    });
   }
 
   // TODO: Update name of this and related properties, since this is only for layout changes (and not tempo).

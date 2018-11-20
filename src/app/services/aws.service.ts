@@ -10,4 +10,6 @@ export class AwsService {
   }
 
   // See https://github.com/awslabs/aws-cognito-angular-quickstart
+
+  // kousekt/angularcognitotest: Angular test app for cognito
 }
