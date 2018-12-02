@@ -1,5 +1,5 @@
 import { Component } from '@angular/core';
-import { UserService } from '../../services/user.service';
+import { AuthService } from '../../services/auth.service';
 import { MatDialogRef } from '@angular/material';
 
 @Component({
@@ -14,7 +14,7 @@ export class LoginComponent {
   errorMessage = '';
 
   constructor(private dialogRef: MatDialogRef<LoginComponent>,
-              private userService: UserService) {}
+              private userService: AuthService) {}
 
   onLoginClicked() {
     this.errorMessage = '';

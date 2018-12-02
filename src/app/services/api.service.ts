@@ -4,7 +4,7 @@ import { Beat } from '../shared/models/beat.model';
 import { Observable } from 'rxjs/index';
 import { BeatDbRow } from '../shared/api-types';
 import { map } from 'rxjs/internal/operators';
-import { UserService } from './user.service';
+import { AuthService } from './auth.service';
 
 // const API_URL = 'https://localhost:44398/api';
 const API_URL = 'https://xudngyebm8.execute-api.us-west-2.amazonaws.com/dev';
@@ -13,7 +13,7 @@ const API_URL = 'https://xudngyebm8.execute-api.us-west-2.amazonaws.com/dev';
 export class ApiService {
 
   constructor(private http: HttpClient,
-              private userService: UserService) {
+              private userService: AuthService) {
   }
 
   readBeats(): Observable<Beat[]> {

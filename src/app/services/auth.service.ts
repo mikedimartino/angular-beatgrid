@@ -12,7 +12,7 @@ const poolData = {
 const userPool = new CognitoUserPool(poolData);
 
 @Injectable()
-export class UserService {
+export class AuthService {
   cognitoUser: any;
 
   get username() {

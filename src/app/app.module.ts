@@ -15,7 +15,7 @@ import { NoteTypeDropdownComponent } from './components/note-type-dropdown/note-
 import { ApiService } from './services/api.service';
 import { PlaybackService } from './services/playback.service';
 import { AwsService } from './services/aws.service';
-import { UserService } from './services/user.service';
+import { AuthService } from './services/auth.service';
 import { LoginComponent } from './components/login/login.component';
 
 @NgModule({
@@ -42,7 +42,7 @@ import { LoginComponent } from './components/login/login.component';
     AwsService,
     BeatService,
     PlaybackService,
-    UserService
+    AuthService
   ],
   bootstrap: [AppComponent],
   entryComponents: [

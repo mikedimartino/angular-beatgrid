@@ -1,14 +1,13 @@
-import {Component, HostListener, OnDestroy, OnInit} from '@angular/core';
-import {GridSquare} from '../../shared/models/grid-square.model';
-import {GridSound} from '../../shared/models/grid-sound.model';
-import {PlaybackService} from '../../services/playback.service';
-import {BeatService} from '../../services/beat.service';
-import {Subscription} from 'rxjs/index';
-import {MatDialog, MatDialogConfig} from '@angular/material';
-import {EditTimeSignatureComponent} from '../edit-time-signature/edit-time-signature.component';
-import {ApiService} from '../../services/api.service';
-import {Beat} from '../../shared/models/beat.model';
-import { UserService } from '../../services/user.service';
+import { Component, HostListener, OnDestroy, OnInit } from '@angular/core';
+import { GridSquare } from '../../shared/models/grid-square.model';
+import { GridSound } from '../../shared/models/grid-sound.model';
+import { PlaybackService } from '../../services/playback.service';
+import { BeatService } from '../../services/beat.service';
+import { Subscription } from 'rxjs/index';
+import { MatDialog, MatDialogConfig } from '@angular/material';
+import { EditTimeSignatureComponent } from '../edit-time-signature/edit-time-signature.component';
+import { Beat } from '../../shared/models/beat.model';
+import { AuthService } from '../../services/auth.service';
 import { LoginComponent } from '../login/login.component';
 
 const wholeNoteWidth = 32 * 16;
@@ -37,7 +36,7 @@ export class GridComponent implements OnInit, OnDestroy {
 
   constructor(public beatService: BeatService,
               public playbackService: PlaybackService,
-              public userService: UserService,
+              public userService: AuthService,
               private dialog: MatDialog) {
   }
 
