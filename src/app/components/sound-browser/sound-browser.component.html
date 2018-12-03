@@ -1,0 +1,25 @@
+<!--https://www.angularjswiki.com/angular/angular-material-icons-list-mat-icon-list/-->
+
+<div class="sl-container">
+  <h2>Sound Library</h2>
+
+  <div class="sl-topbar">
+    <mat-icon class="sl-back" (click)="onBackClicked()">arrow_back</mat-icon>
+    <span>/</span>
+    <div *ngFor="let crumb of breadcrumbs; let i = index" class="sl-breadcrumbs">
+      <span class="sl-breadcrumb-name" (click)="onBreadcrumbClicked(i)">{{ crumb }}</span>
+      <span>/</span>
+    </div>
+  </div>
+
+  <mat-spinner *ngIf="loading"></mat-spinner>
+  <ul *ngIf="!loading">
+    <li *ngFor="let file of files"
+        class="file"
+        (click)="onObjectClicked(file)">
+      <mat-icon *ngIf="isFolder(file)">folder_open</mat-icon>
+      <mat-icon *ngIf="!isFolder(file)" (click)="playSound(file);$event.stopPropagation()">play_circle_outline</mat-icon>
+      <span>{{ file.key }}</span>
+    </li>
+  </ul>
+</div>

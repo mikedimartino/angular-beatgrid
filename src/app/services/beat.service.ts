@@ -146,7 +146,7 @@ export class BeatService {
         this.new();
       }
     }, error => {
-      console.log('Error:', error);
+      console.error('Error:', error);
     });
   }
 

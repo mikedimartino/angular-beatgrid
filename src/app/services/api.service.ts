@@ -2,18 +2,17 @@ import { HttpClient, HttpHeaders } from '@angular/common/http';
 import { Injectable } from '@angular/core';
 import { Beat } from '../shared/models/beat.model';
 import { Observable } from 'rxjs/index';
-import { BeatDbRow } from '../shared/api-types';
+import { BeatDbRow } from '../shared/interfaces';
 import { map } from 'rxjs/internal/operators';
 import { AuthService } from './auth.service';
 
-// const API_URL = 'https://localhost:44398/api';
 const API_URL = 'https://xudngyebm8.execute-api.us-west-2.amazonaws.com/dev';
 
 @Injectable()
 export class ApiService {
 
   constructor(private http: HttpClient,
-              private userService: AuthService) {
+              private authService: AuthService) {
   }
 
   readBeats(): Observable<Beat[]> {
@@ -36,7 +35,7 @@ export class ApiService {
   }
 
   createBeat(beat: Beat): Observable<Beat> {
-    const headers = new HttpHeaders().set('Authorization', this.userService.getToken());
+    const headers = new HttpHeaders().set('Authorization', this.authService.getToken());
     const options = { headers: headers };
     const body = {
       name: beat.name,
@@ -47,9 +46,16 @@ export class ApiService {
   }
 
   deleteBeat(id: number): Observable<any> { // What is the response type actually?
-    const headers = new HttpHeaders().set('Authorization', this.userService.getToken());
+    const headers = new HttpHeaders().set('Authorization', this.authService.getToken());
     const options = { headers: headers };
     return this.http.delete(`${API_URL}/beats?id=${id}`, options);
   }
 
+  readSounds(folder: string): Observable<any> {
+    return this.http.get(`${API_URL}/sounds?folder=${folder}`);
+  }
+
+  downloadSound(key: string): Observable<any> {
+    return this.http.get(`${API_URL}/sound?key=${key}`);
+  }
 }

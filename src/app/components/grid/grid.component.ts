@@ -9,6 +9,8 @@ import { EditTimeSignatureComponent } from '../edit-time-signature/edit-time-sig
 import { Beat } from '../../shared/models/beat.model';
 import { AuthService } from '../../services/auth.service';
 import { LoginComponent } from '../login/login.component';
+import { ApiService } from '../../services/api.service';
+import { SoundBrowserComponent } from '../sound-browser/sound-browser.component';
 
 const wholeNoteWidth = 32 * 16;
 const noteMargin = 1;
@@ -37,7 +39,8 @@ export class GridComponent implements OnInit, OnDestroy {
   constructor(public beatService: BeatService,
               public playbackService: PlaybackService,
               public userService: AuthService,
-              private dialog: MatDialog) {
+              private dialog: MatDialog,
+              private apiService: ApiService) {
   }
 
   ngOnInit() {
@@ -115,6 +118,12 @@ export class GridComponent implements OnInit, OnDestroy {
 
   onSoundClicked(sound: GridSound) {
     this.playbackService.playSound(sound.id);
+  }
+
+  openSoundLibrary() {
+    const dialogConfig = new MatDialogConfig();
+    dialogConfig.panelClass = 'no-padding';
+    this.dialog.open(SoundBrowserComponent, dialogConfig);
   }
 
   onFooterClicked(column: number) {

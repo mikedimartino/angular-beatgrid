@@ -1,0 +1,43 @@
+div.sl-container {
+  height: 600px;
+  padding: 15px;
+  width: 600px;
+}
+
+div.sl-topbar {
+  align-items: center;
+  display: flex;
+}
+
+mat-icon {
+  cursor: pointer;
+  margin-right: 5px;
+  text-decoration: none;
+}
+
+div.sl-breadcrumbs {
+  display: inline-block;
+}
+
+span.sl-breadcrumb-name {
+  cursor: pointer;
+  margin: 0 3px;
+}
+
+span.sl-breadcrumb-name:hover {
+  text-decoration: underline;
+}
+
+ul {
+  list-style: none;
+}
+
+li.file {
+  align-items: center;
+  cursor: pointer;
+  display: flex;
+}
+
+li.file > span:hover {
+  text-decoration: underline;
+}
