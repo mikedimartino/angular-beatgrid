@@ -1,0 +1,50 @@
+.grid-outer-wrapper {
+  text-align: center;
+}
+
+.grid-wrapper {
+  display: inline-block;
+}
+
+.grid-row-wrapper {
+  align-items: center;
+  display: flex;
+
+  .grid-sound-icon {
+    background: orange;
+    padding: 0 10px;
+  }
+
+  .grid-row-options {
+    background: lightblue;
+
+    div {
+      display: inline-block;
+      user-select: none;
+      visibility: hidden;
+
+      mat-icon {
+        vertical-align: bottom;
+      }
+    }
+  }
+
+  &:hover {
+    .grid-row-options div {
+      visibility: visible;
+    }
+
+    background: yellow;
+  }
+}
+
+
+
+.grid-col-wrapper {
+  background: green;
+  display: inline-block;
+  height: 45px;
+  width: 45px;
+  margin: 1px;
+  vertical-align: bottom;
+}

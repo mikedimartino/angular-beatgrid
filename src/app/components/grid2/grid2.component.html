@@ -1,0 +1,27 @@
+<div class="grid-outer-wrapper">
+  <p>x</p>
+  <div #gridWrapperDiv class="grid-wrapper">
+    <div *ngFor="let row of rows" class="grid-row-wrapper">
+      <div #soundIconDiv class="grid-sound-icon">
+        <mat-icon>music_note</mat-icon>
+      </div>
+      <div *ngFor="let col of columns" class="grid-col-wrapper"></div>
+      <div #rowOptionsDiv class="grid-row-options">
+        <div>
+          <mat-icon>settings</mat-icon>
+        </div>
+        <div>
+          <mat-icon>reorder</mat-icon>
+        </div>
+        <div>
+          <mat-icon>add_circle_outline</mat-icon>
+        </div>
+        <div>
+          <mat-icon>delete</mat-icon> <!-- delete? -->
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+

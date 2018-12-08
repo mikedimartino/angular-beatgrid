@@ -7,7 +7,7 @@ import { GridComponent } from './components/grid/grid.component';
 import { BeatService } from './services/beat.service';
 import { FormsModule } from '@angular/forms';
 import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
-import { MatCardModule, MatIconModule, MatInputModule, MatProgressSpinnerModule } from '@angular/material';
+import {MatCardModule, MatIconModule, MatInputModule, MatMenuModule, MatProgressSpinnerModule} from '@angular/material';
 import { MatSelectModule } from '@angular/material/select';
 import { MatDialogModule } from '@angular/material/dialog';
 import { EditTimeSignatureComponent } from './components/edit-time-signature/edit-time-signature.component';
@@ -19,6 +19,7 @@ import { AuthService } from './services/auth.service';
 import { LoginComponent } from './components/login/login.component';
 import { SoundBrowserComponent } from './components/sound-browser/sound-browser.component';
 import { SoundService } from './services/sound.service';
+import { Grid2Component } from './components/grid2/grid2.component';
 
 @NgModule({
   declarations: [
@@ -27,7 +28,8 @@ import { SoundService } from './services/sound.service';
     EditTimeSignatureComponent,
     NoteTypeDropdownComponent,
     LoginComponent,
-    SoundBrowserComponent
+    SoundBrowserComponent,
+    Grid2Component
   ],
   imports: [
     BrowserAnimationsModule,
@@ -39,7 +41,8 @@ import { SoundService } from './services/sound.service';
     MatCardModule,
     MatProgressSpinnerModule,
     MatInputModule,
-    MatIconModule
+    MatIconModule,
+    MatMenuModule
   ],
   providers: [
     ApiService,
