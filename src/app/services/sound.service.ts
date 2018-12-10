@@ -18,7 +18,6 @@ export class SoundService {
     }
 
     return this.apiService.readSounds(folder).pipe(map((objects: S3Object[]) => {
-      console.log('response123123:', objects);
       this.s3Cache[folder] = objects;
       this.downloadSounds(objects); // TODO: Make method return promise and do something?
       return objects;
