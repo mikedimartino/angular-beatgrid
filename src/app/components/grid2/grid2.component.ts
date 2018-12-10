@@ -147,11 +147,11 @@ export class Grid2Component implements OnInit, AfterViewInit, OnDestroy, AfterVi
   }
 
   private highlightCoveredSquares(state: SelectionRectangleState) {
-    let rowsCovered = state.height / (this.noteHeight + 1); // + 1 for margin
-    let columnsCovered = state.width / (this.noteWidth + 1); // + 1 for margin
+    let rowsCovered = state.height / (this.noteHeight + 2); // + 2 for margin (each square has margin 1)
+    let columnsCovered = state.width / (this.noteWidth + 2); // + 2 for margin (each square has margin 1)
 
-    const topLeftX = (state.topLeft.x - this.topLeftSquareLeft) / (this.noteWidth + 1);
-    const topLeftY = (state.topLeft.y - this.topLeftSquareTop) / (this.noteHeight + 1);
+    const topLeftX = (state.topLeft.x - this.topLeftSquareLeft) / (this.noteWidth + 2);
+    const topLeftY = (state.topLeft.y - this.topLeftSquareTop) / (this.noteHeight + 2);
 
     let startX = topLeftX;
     if (topLeftX < 0) {
