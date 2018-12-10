@@ -1,24 +1,46 @@
-<div class="grid-outer-wrapper">
-  <p>x</p>
+<div id="grid-outer-wrapper" class="grid-outer-wrapper" style="position: relative;">
+  <app-selection-rectangle [containerId]="'grid-outer-wrapper'"
+                           (stateChanged)="onSelectionRectangleChanged($event)"></app-selection-rectangle>
   <div #gridWrapperDiv class="grid-wrapper">
-    <div *ngFor="let row of rows" class="grid-row-wrapper">
+    <div *ngFor="let row of playbackService.currentMeasure.squares"
+         class="grid-row-wrapper"
+         [class.background-inherit]="selectionRectangleActive">
       <div #soundIconDiv class="grid-sound-icon">
         <mat-icon>music_note</mat-icon>
       </div>
-      <div *ngFor="let col of columns" class="grid-col-wrapper"></div>
+      <div *ngFor="let square of row"
+           (mousedown)="onSquareMouseDown(square, $event)"
+           (mouseenter)="onSquareMouseEnter(square)"
+           (mouseleave)="onSquareMouseLeave(square)"
+           [id]="getSquareHtmlId(square.row, square.column)"
+           class="grid-square-wrapper"
+           style.width="{{ noteWidth + 'px'}}"
+           style.height="{{ noteHeight + 'px'}}"
+           style.box-shadow="{{ selectionRectangleActive ? 'none' : '' }}"
+           [class.beat-square]="isBeatColumn(square.column)"
+           [class.active-square]="square.on"
+           [class.active-column]="square.column === playbackService.activeColumn"
+           [class.highlighted-square]="isHighlighted(square)"
+           [class.cursor-fill-square]="mouseContext === mouseContextEnum.FillSquare"
+           [class.cursor-erase-square]="mouseContext === mouseContextEnum.EraseSquare"></div>
       <div #rowOptionsDiv class="grid-row-options">
-        <div>
-          <mat-icon>settings</mat-icon>
-        </div>
-        <div>
-          <mat-icon>reorder</mat-icon>
-        </div>
-        <div>
-          <mat-icon>add_circle_outline</mat-icon>
-        </div>
-        <div>
-          <mat-icon>delete</mat-icon> <!-- delete? -->
-        </div>
+        <mat-icon style.visibility="{{selectionRectangleActive ? 'hidden' : ''}}">settings</mat-icon>
+        <mat-icon style.visibility="{{selectionRectangleActive ? 'hidden' : ''}}">reorder</mat-icon>
+        <mat-icon style.visibility="{{selectionRectangleActive ? 'hidden' : ''}}">delete</mat-icon>
+      </div>
+    </div>
+    <div #footerWrapperDiv
+         *ngIf="playbackService.currentMeasure.squares.length > 0"
+         class="footer-wrapper">
+      <div *ngFor="let square of playbackService.currentMeasure.squares[0]; let i = index"
+           class="grid-square-wrapper column-footer noselect"
+           style.width="{{ noteWidth + 'px' }}"
+           [class.active-column-footer]="playbackService.activeColumn === i"
+           [innerHtml]="getColumnFooter(i)"
+           (click)="onFooterClicked(i)">
+      </div>
+      <div class="add-row-icon">
+        <mat-icon>add</mat-icon>
       </div>
     </div>
   </div>

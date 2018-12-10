@@ -53,6 +53,13 @@ export class BeatService {
     return this.beat.measures[0].numColumns;
   }
 
+  get rows(): number {
+    if (!this.beat.measures || !this.beat.measures.length) {
+      return 0;
+    }
+    return this.beat.measures[0].squares.length;
+  }
+
   get columnsPerNote(): number {
     return this.beat.divisionLevel / this.beat.timeSignature.noteType;
   }

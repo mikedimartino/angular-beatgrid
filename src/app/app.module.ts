@@ -20,6 +20,7 @@ import { LoginComponent } from './components/login/login.component';
 import { SoundBrowserComponent } from './components/sound-browser/sound-browser.component';
 import { SoundService } from './services/sound.service';
 import { Grid2Component } from './components/grid2/grid2.component';
+import { SelectionRectangleComponent } from './components/selection-rectangle/selection-rectangle.component';
 
 @NgModule({
   declarations: [
@@ -29,7 +30,8 @@ import { Grid2Component } from './components/grid2/grid2.component';
     NoteTypeDropdownComponent,
     LoginComponent,
     SoundBrowserComponent,
-    Grid2Component
+    Grid2Component,
+    SelectionRectangleComponent
   ],
   imports: [
     BrowserAnimationsModule,

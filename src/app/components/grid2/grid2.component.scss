@@ -8,43 +8,116 @@
 
 .grid-row-wrapper {
   align-items: center;
+  border-radius: 3px;
   display: flex;
 
-  .grid-sound-icon {
-    background: orange;
-    padding: 0 10px;
-  }
-
   .grid-row-options {
-    background: lightblue;
-
-    div {
+    mat-icon {
       display: inline-block;
+      color: #AEB6BF;
+      cursor: pointer;
+      padding-left: 5px;
       user-select: none;
       visibility: hidden;
 
-      mat-icon {
-        vertical-align: bottom;
+      &:last-child {
+        padding-right: 5px;
+      }
+
+      &:hover {
+        color: black;
       }
     }
   }
 
   &:hover {
-    .grid-row-options div {
+    .grid-row-options mat-icon {
       visibility: visible;
     }
 
-    background: yellow;
+    background: #EBEDEF;
   }
 }
 
+.grid-sound-icon {
+  cursor: pointer;
+  padding: 0 10px;
+}
 
-
-.grid-col-wrapper {
-  background: green;
+.grid-square-wrapper {
+  border-radius: 3px;
+  cursor: pointer;
+  background: darkgray;
   display: inline-block;
-  height: 45px;
-  width: 45px;
+  height: 32px;
+  width: 32px;
   margin: 1px;
   vertical-align: bottom;
+
+  &:hover {
+    box-shadow: 0 0 3px black;
+  }
+}
+
+.active-column {
+  opacity: 0.5;
+}
+
+.column-footer {
+  background: inherit;
+  font-size: 16px;
+  height: 24px;
+  line-height: 24px;
+  text-align: center;
+}
+
+.active-column-footer {
+  color: red;
+  font-weight: bold;
+}
+
+.beat-square {
+  background: black;
+}
+
+.active-square {
+  background: red;
+}
+
+.highlighted-square {
+  border: 1px solid greenyellow;
+  border-radius: 0;
+  margin: 0;
+  box-shadow: 0 0 5px green;
+  opacity: .5;
+}
+
+.cursor-fill-square {
+  cursor: cell;
+}
+
+.cursor-erase-square {
+  cursor: crosshair;
+}
+
+.footer-wrapper {
+  text-align: left;
+}
+
+.add-row-icon {
+  align-items: center;
+  display: inline-flex;
+  padding: 0 10px;
+
+  mat-icon {
+    color: #AEB6BF;
+    cursor: pointer;
+    font-size: 16px;
+    height: 16px;
+    vertical-align: center;
+
+    &:hover {
+      color: black;
+    }
+  }
 }
