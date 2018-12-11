@@ -8,6 +8,7 @@ import {Subscription} from 'rxjs/index';
 import {PlaybackService} from '../../services/playback.service';
 import {SelectionRectangleState} from '../selection-rectangle/selection-rectangle.component';
 import {GridSquare} from '../../shared/models/grid-square.model';
+import {GridService} from '../../services/grid.service';
 
 const sixteenthNoteWidth = 32;
 const wholeNoteWidth = sixteenthNoteWidth * 16;
@@ -32,7 +33,6 @@ export class Grid2Component implements OnInit, AfterViewInit, OnDestroy, AfterVi
   mouseContextEnum = MouseContext;
   mouseContext = MouseContext.Default;
   squareLongPressTimeoutHandler: any;
-  highlightedSquaresDict = {}; // key is "x:y"
 
   topLeftSquare: HTMLElement;
   topLeftSquareTop = 0;
@@ -44,9 +44,11 @@ export class Grid2Component implements OnInit, AfterViewInit, OnDestroy, AfterVi
   @ViewChild('soundIconDiv') soundIconDiv: ElementRef;
   @ViewChild('rowOptionsDiv') rowOptionsDiv: ElementRef;
   @ViewChild('footerWrapperDiv') footerWrapperDiv: ElementRef;
+  @ViewChild('hlAreaMenuContainerDiv') hlAreaMenuContainerDiv: ElementRef;
 
   constructor(
     private beatService: BeatService,
+    public gridService: GridService,
     private renderer: Renderer2,
     public playbackService: PlaybackService) {}
 
@@ -71,6 +73,11 @@ export class Grid2Component implements OnInit, AfterViewInit, OnDestroy, AfterVi
 
   ngOnDestroy() {
     this.beatChangedSubscription.unsubscribe();
+  }
+
+  isActiveColumn(column: number) {
+    return column === this.playbackService.activeColumn
+      && this.playbackService.currentMeasureIndex === this.gridService.currentMeasureIndex;
   }
 
   isBeatColumn(column: number) {
@@ -122,12 +129,12 @@ export class Grid2Component implements OnInit, AfterViewInit, OnDestroy, AfterVi
     this.mouseContext = MouseContext.Default;
   }
 
-  @HostListener('document:mousedown', ['$event'])
-  onMouseDown(event: MouseEvent) {
-    if (event.which === 1) {
-      this.clearHighlightedSquares();
-    }
-  }
+  // @HostListener('document:mousedown', ['$event'])
+  // onMouseDown(event: MouseEvent) {
+  //   if (event.which === 1) {
+  //     this.gridService.clearHighlightedSquares();
+  //   }
+  // }
 
   onSelectionRectangleChanged(state: SelectionRectangleState) {
     if (state.active !== this.selectionRectangleActive) {
@@ -138,20 +145,37 @@ export class Grid2Component implements OnInit, AfterViewInit, OnDestroy, AfterVi
     }
   }
 
-  getSquareHtmlId(row: number, column: number) {
+  getSquareHtmlId(row: number, column: number): string {
     return `square${row}_${column}`;
   }
 
-  isHighlighted(square: GridSquare) {
-    return this.highlightedSquaresDict[`${square.column}:${square.row}`] === true;
+  shouldHideRowOptionsMenu(): boolean {
+    return this.selectionRectangleActive || this.gridService.anySquaresHighlighted();
+  }
+
+  // Highlighted area section
+  onCopyHighlightedArea() {
+    console.log('Copy');
+  }
+
+  onCutHighlightedArea() {
+    console.log('Cut');
+  }
+
+  onDeleteHighlightedArea() {
+    this.gridService.deleteHighlightedSquares();
+  }
+
+  onCancelHighlightedArea() {
+    this.gridService.clearHighlightedSquares();
   }
 
   private highlightCoveredSquares(state: SelectionRectangleState) {
-    let rowsCovered = state.height / (this.noteHeight + 2); // + 2 for margin (each square has margin 1)
-    let columnsCovered = state.width / (this.noteWidth + 2); // + 2 for margin (each square has margin 1)
-
     const topLeftX = (state.topLeft.x - this.topLeftSquareLeft) / (this.noteWidth + 2);
     const topLeftY = (state.topLeft.y - this.topLeftSquareTop) / (this.noteHeight + 2);
+
+    let rowsCovered = state.height / (this.noteHeight + 2); // + 2 for margin (each square has margin 1)
+    let columnsCovered = state.width / (this.noteWidth + 2); // + 2 for margin (each square has margin 1)
 
     let startX = topLeftX;
     if (topLeftX < 0) {
@@ -172,15 +196,7 @@ export class Grid2Component implements OnInit, AfterViewInit, OnDestroy, AfterVi
     finishX = Math.min(Math.floor(finishX), this.beatService.columnsPerMeasure - 1);
     finishY = Math.min(Math.floor(finishY), this.beatService.rows - 1);
 
-    for (let i = startX; i <= finishX; i++) {
-      for (let j = startY; j <= finishY; j++) {
-        this.highlightedSquaresDict[`${i}:${j}`] = true;
-      }
-    }
-  }
-
-  private clearHighlightedSquares() {
-    this.highlightedSquaresDict = {};
+    this.gridService.setAreaHighlighted(startX, startY, finishX, finishY);
   }
 
   private updateStyles(): void {
@@ -192,6 +208,12 @@ export class Grid2Component implements OnInit, AfterViewInit, OnDestroy, AfterVi
     this.renderer.setStyle(this.gridWrapperDiv.nativeElement, 'margin-left', `${gridMarginLeft}px`);
 
     this.renderer.setStyle(this.footerWrapperDiv.nativeElement, 'margin-left', `${soundIconDivWidth}px`);
+
+    if (this.hlAreaMenuContainerDiv) {
+      const hlAreaMenuContainerDivHeight = this.gridWrapperDiv.nativeElement.clientHeight - this.footerWrapperDiv.nativeElement.clientHeight;
+      this.renderer.setStyle(this.hlAreaMenuContainerDiv.nativeElement, 'height', `${hlAreaMenuContainerDivHeight}px`);
+      this.renderer.setStyle(this.hlAreaMenuContainerDiv.nativeElement, 'width', `${rowOptionsDivWidth}px`);
+    }
 
     this.shouldUpdateCornerSquares = true;
   }

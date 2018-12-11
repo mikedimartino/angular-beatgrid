@@ -97,7 +97,7 @@ export class PlaybackService {
   }
 
   setActiveColumn(column: number) {
-    this.lastColumnPlayed = column; // - 1;
+    this.lastColumnPlayed = column;
     this.state.activeColumn = column;
 
     if (this.isPlaying) {

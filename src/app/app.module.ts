@@ -21,37 +21,39 @@ import { SoundBrowserComponent } from './components/sound-browser/sound-browser.
 import { SoundService } from './services/sound.service';
 import { Grid2Component } from './components/grid2/grid2.component';
 import { SelectionRectangleComponent } from './components/selection-rectangle/selection-rectangle.component';
+import {GridService} from './services/grid.service';
 
 @NgModule({
   declarations: [
     AppComponent,
-    GridComponent,
     EditTimeSignatureComponent,
-    NoteTypeDropdownComponent,
-    LoginComponent,
-    SoundBrowserComponent,
+    GridComponent,
     Grid2Component,
-    SelectionRectangleComponent
+    LoginComponent,
+    NoteTypeDropdownComponent,
+    SelectionRectangleComponent,
+    SoundBrowserComponent
   ],
   imports: [
     BrowserAnimationsModule,
     BrowserModule,
     FormsModule,
     HttpClientModule,
-    MatDialogModule,
-    MatSelectModule,
     MatCardModule,
-    MatProgressSpinnerModule,
-    MatInputModule,
+    MatDialogModule,
     MatIconModule,
-    MatMenuModule
+    MatInputModule,
+    MatMenuModule,
+    MatProgressSpinnerModule,
+    MatSelectModule
   ],
   providers: [
     ApiService,
+    AuthService,
     AwsService,
     BeatService,
+    GridService,
     PlaybackService,
-    AuthService,
     SoundService
   ],
   bootstrap: [AppComponent],

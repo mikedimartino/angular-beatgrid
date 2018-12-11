@@ -1,10 +1,8 @@
 <div id="grid-outer-wrapper" class="grid-outer-wrapper" style="position: relative;">
-  <app-selection-rectangle [containerId]="'grid-outer-wrapper'"
-                           (stateChanged)="onSelectionRectangleChanged($event)"></app-selection-rectangle>
   <div #gridWrapperDiv class="grid-wrapper">
-    <div *ngFor="let row of playbackService.currentMeasure.squares"
+    <div *ngFor="let row of gridService.currentMeasure.squares"
          class="grid-row-wrapper"
-         [class.background-inherit]="selectionRectangleActive">
+         [class.background-inherit]="shouldHideRowOptionsMenu()">
       <div #soundIconDiv class="grid-sound-icon">
         <mat-icon>music_note</mat-icon>
       </div>
@@ -16,34 +14,53 @@
            class="grid-square-wrapper"
            style.width="{{ noteWidth + 'px'}}"
            style.height="{{ noteHeight + 'px'}}"
-           style.box-shadow="{{ selectionRectangleActive ? 'none' : '' }}"
+           style.box-shadow="{{ shouldHideRowOptionsMenu() ? 'none' : '' }}"
            [class.beat-square]="isBeatColumn(square.column)"
            [class.active-square]="square.on"
-           [class.active-column]="square.column === playbackService.activeColumn"
-           [class.highlighted-square]="isHighlighted(square)"
+           [class.active-column]="isActiveColumn(square.column)"
+           [class.highlighted-square]="gridService.isHighlighted(square)"
            [class.cursor-fill-square]="mouseContext === mouseContextEnum.FillSquare"
            [class.cursor-erase-square]="mouseContext === mouseContextEnum.EraseSquare"></div>
       <div #rowOptionsDiv class="grid-row-options">
-        <mat-icon style.visibility="{{selectionRectangleActive ? 'hidden' : ''}}">settings</mat-icon>
-        <mat-icon style.visibility="{{selectionRectangleActive ? 'hidden' : ''}}">reorder</mat-icon>
-        <mat-icon style.visibility="{{selectionRectangleActive ? 'hidden' : ''}}">delete</mat-icon>
+        <mat-icon style.visibility="{{shouldHideRowOptionsMenu() ? 'hidden' : ''}}">settings</mat-icon>
+        <mat-icon style.visibility="{{shouldHideRowOptionsMenu() ? 'hidden' : ''}}">reorder</mat-icon>
+        <mat-icon style.visibility="{{shouldHideRowOptionsMenu() ? 'hidden' : ''}}">add</mat-icon>
+        <mat-icon style.visibility="{{shouldHideRowOptionsMenu() ? 'hidden' : ''}}">delete</mat-icon>
       </div>
     </div>
     <div #footerWrapperDiv
-         *ngIf="playbackService.currentMeasure.squares.length > 0"
+         *ngIf="gridService.currentMeasure.squares.length > 0"
          class="footer-wrapper">
-      <div *ngFor="let square of playbackService.currentMeasure.squares[0]; let i = index"
+      <div *ngFor="let square of gridService.currentMeasure.squares[0]; let i = index"
            class="grid-square-wrapper column-footer noselect"
            style.width="{{ noteWidth + 'px' }}"
-           [class.active-column-footer]="playbackService.activeColumn === i"
+           [class.active-column-footer]="isActiveColumn(i)"
            [innerHtml]="getColumnFooter(i)"
            (click)="onFooterClicked(i)">
       </div>
-      <div class="add-row-icon">
-        <mat-icon>add</mat-icon>
-      </div>
+    </div>
+
+    <div #hlAreaMenuContainerDiv
+         class="highlighted-area-menu-container"
+         style.visibility="{{ gridService.anySquaresHighlighted() ? 'visible' : 'hidden'}}">
+      <ul class="noselect">
+        <li (click)="onCopyHighlightedArea()">
+          <mat-icon>content_copy</mat-icon>Copy
+        </li>
+        <li (click)="onCutHighlightedArea()">
+          <mat-icon>content_cut</mat-icon>Cut
+        </li>
+        <li (click)="onDeleteHighlightedArea()">
+          <mat-icon>delete</mat-icon>Delete
+        </li>
+        <li (click)="onCancelHighlightedArea()">
+          <mat-icon>cancel</mat-icon>Cancel
+        </li>
+      </ul>
     </div>
   </div>
 </div>
 
-
+<!-- Need to place at bottom for z-index issues -->
+<app-selection-rectangle [containerId]="'grid-outer-wrapper'"
+                         (stateChanged)="onSelectionRectangleChanged($event)"></app-selection-rectangle>

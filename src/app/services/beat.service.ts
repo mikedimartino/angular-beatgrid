@@ -25,7 +25,16 @@ export class BeatService {
   beatChangedSubject = new Subject();
   isNew = false;
 
-  // TODO: Get rid of all of these getters and access beat directly?
+  constructor(private apiService: ApiService) {
+    this.new();
+    this.apiService.readBeats().subscribe(beats => {
+      this.beats = beats;
+      if (beats && beats.length) {
+        this.selectBeat(beats[0].id);
+      }
+    });
+  }
+
   get tempo(): number {
     return this.beat.tempo;
   }
@@ -62,16 +71,6 @@ export class BeatService {
 
   get columnsPerNote(): number {
     return this.beat.divisionLevel / this.beat.timeSignature.noteType;
-  }
-
-  constructor(private apiService: ApiService) {
-    this.new();
-    this.apiService.readBeats().subscribe(beats => {
-      this.beats = beats;
-      if (beats && beats.length) {
-        this.selectBeat(beats[0].id);
-      }
-    });
   }
 
   selectBeat(id: number) {
