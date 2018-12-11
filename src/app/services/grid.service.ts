@@ -55,6 +55,12 @@ export class GridService {
     });
   }
 
+  fillHighlightedSquares(): void {
+    this.highlightedSquares.forEach(square => {
+      square.on = true;
+    });
+  }
+
   private getSquaresInArea(startX: number, startY: number, finishX: number, finishY: number): GridSquare[] {
     const squares = [];
     for (let column = startX; column <= finishX; column++) {

@@ -44,17 +44,20 @@
          class="highlighted-area-menu-container"
          style.visibility="{{ gridService.anySquaresHighlighted() ? 'visible' : 'hidden'}}">
       <ul class="noselect">
-        <li (click)="onCopyHighlightedArea()">
-          <mat-icon>content_copy</mat-icon>Copy
-        </li>
-        <li (click)="onCutHighlightedArea()">
-          <mat-icon>content_cut</mat-icon>Cut
+        <li (click)="onFillHighlightedArea()">
+          <mat-icon>format_color_fill</mat-icon> Fill
         </li>
         <li (click)="onDeleteHighlightedArea()">
-          <mat-icon>delete</mat-icon>Delete
+          <mat-icon>delete</mat-icon> Delete
+        </li>
+        <li (click)="onCopyHighlightedArea()">
+          <mat-icon>content_copy</mat-icon> Copy
+        </li>
+        <li (click)="onCutHighlightedArea()">
+          <mat-icon>content_cut</mat-icon> Cut
         </li>
         <li (click)="onCancelHighlightedArea()">
-          <mat-icon>cancel</mat-icon>Cancel
+          <mat-icon>cancel</mat-icon> Cancel
         </li>
       </ul>
     </div>

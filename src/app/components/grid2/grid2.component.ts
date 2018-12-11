@@ -162,6 +162,10 @@ export class Grid2Component implements OnInit, AfterViewInit, OnDestroy, AfterVi
     console.log('Cut');
   }
 
+  onFillHighlightedArea() {
+    this.gridService.fillHighlightedSquares();
+  }
+
   onDeleteHighlightedArea() {
     this.gridService.deleteHighlightedSquares();
   }
