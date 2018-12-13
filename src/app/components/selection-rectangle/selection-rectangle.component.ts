@@ -6,7 +6,7 @@ import {
 } from '@angular/core';
 import {Coordinate} from '../../shared/interfaces';
 
-const LONG_PRESS_TIME_MS = 500;
+const LONG_PRESS_TIME_MS = 250;
 
 export class SelectionRectangleState {
   active: boolean;

@@ -1,0 +1,14 @@
+<div class="top-buttons">
+  <button (click)="saveBeat()">Save</button>
+  <button (click)="newBeat()">New</button>
+  <button (click)="openSoundLibrary()">Sound Library</button>
+</div>
+
+<h3>Beat: {{ beatService.beat.name }}</h3>
+<ul>
+  <li *ngFor="let beat of beatService.beats">
+    <a (click)="onBeatClicked(beat.id)">{{ beat.name }}</a>
+    &nbsp;
+    <button (click)="onDeleteBeatClicked(beat.id)">Delete</button>
+  </li>
+</ul>

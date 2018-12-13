@@ -3,7 +3,7 @@ import {GridSound} from '../shared/models/grid-sound.model';
 import {BeatService} from './beat.service';
 import {Measure} from '../shared/models/measure.model';
 import {PlaybackState} from '../shared/models/playback-state.model';
-import {Subscription} from 'rxjs/index';
+import {Subject, Subscription} from 'rxjs/index';
 
 const schedulerFrequencyMs = 50;
 
@@ -19,21 +19,7 @@ export class PlaybackService {
   private state: PlaybackState = <PlaybackState>{};
   private beatChangedSubscription: Subscription;
 
-  get activeColumn(): number {
-    return this.state.activeColumn;
-  }
-
-  get currentMeasureIndex(): number {
-    return this.state.currentMeasureIndex;
-  }
-
-  get currentMeasure(): Measure {
-    return this.state.currentMeasure;
-  }
-
-  get isPlaying(): boolean {
-    return this.state.isPlaying;
-  }
+  currentMeasureChanged = new Subject();
 
   constructor(private beatService: BeatService) {
     this.fetchSounds().then(() => console.log('Finished loading sounds.'));
@@ -48,6 +34,22 @@ export class PlaybackService {
       this.updateColumnDuration();
       this.state.currentMeasure = this.beatService.measures[this.currentMeasureIndex];
     });
+  }
+
+  get activeColumn(): number {
+    return this.state.activeColumn;
+  }
+
+  get currentMeasureIndex(): number {
+    return this.state.currentMeasureIndex;
+  }
+
+  get currentMeasure(): Measure {
+    return this.state.currentMeasure;
+  }
+
+  get isPlaying(): boolean {
+    return this.state.isPlaying;
   }
 
   playSound(soundId: number, timeMs = 0) {
@@ -94,6 +96,7 @@ export class PlaybackService {
     this.state.currentMeasureIndex = index;
     this.state.currentMeasure = this.beatService.measures[this.currentMeasureIndex];
     this.setActiveColumn(0);
+    this.currentMeasureChanged.next();
   }
 
   setActiveColumn(column: number) {

@@ -1,0 +1,31 @@
+.playback-controls-wrapper {
+  align-items: center;
+  justify-content: space-between;
+  display: flex;
+  text-align: center;
+}
+
+.left-section {
+  flex: 0 0 auto;
+  text-align: left;
+  width: 250px;
+}
+
+.center-section {
+  flex: 1 1 auto;
+  margin: 0 10px;
+
+  .active-measure-button {
+    color: red;
+  }
+}
+
+.right-section {
+  width: 250px;
+  flex:0 0 auto;
+  text-align: right;
+
+  button {
+    margin-left: 10px;
+  }
+}

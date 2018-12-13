@@ -65,8 +65,7 @@ export class Grid2Component implements OnInit, AfterViewInit, OnDestroy, AfterVi
   }
 
   isActiveColumn(column: number) {
-    return column === this.playbackService.activeColumn
-      && this.playbackService.currentMeasureIndex === this.gridService.currentMeasureIndex;
+    return column === this.playbackService.activeColumn;
   }
 
   isBeatColumn(column: number) {

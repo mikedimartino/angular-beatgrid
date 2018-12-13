@@ -22,6 +22,9 @@ import { SoundService } from './services/sound.service';
 import { Grid2Component } from './components/grid2/grid2.component';
 import { SelectionRectangleComponent } from './components/selection-rectangle/selection-rectangle.component';
 import {GridService} from './services/grid.service';
+import { HeaderComponent } from './components/header/header.component';
+import { PlaybackControlsComponent } from './components/playback-controls/playback-controls.component';
+import { BeatLibraryComponent } from './components/beat-library/beat-library.component';
 
 @NgModule({
   declarations: [
@@ -32,7 +35,10 @@ import {GridService} from './services/grid.service';
     LoginComponent,
     NoteTypeDropdownComponent,
     SelectionRectangleComponent,
-    SoundBrowserComponent
+    SoundBrowserComponent,
+    HeaderComponent,
+    PlaybackControlsComponent,
+    BeatLibraryComponent
   ],
   imports: [
     BrowserAnimationsModule,

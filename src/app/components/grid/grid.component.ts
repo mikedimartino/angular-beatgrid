@@ -150,6 +150,7 @@ export class GridComponent implements OnInit, OnDestroy {
   onNextMeasure() {
     this.playbackService.nextMeasure();
   }
+
   onChangeDivisionLevel(value: number) {
     this.beatService.setDivisionLevel(value);
   }

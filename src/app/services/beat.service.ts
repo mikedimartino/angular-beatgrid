@@ -128,6 +128,11 @@ export class BeatService {
     this.onBeatChanged();
   }
 
+  deleteMeasure(index) {
+    this.beat.measures.splice(index, 1);
+    this.onBeatChanged();
+  }
+
   deleteSquares(squares: GridSquare[]): void {
     this.modifySquares(squares, square => square.on = false);
   }

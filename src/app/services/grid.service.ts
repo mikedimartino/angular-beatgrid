@@ -2,6 +2,7 @@ import { Injectable } from '@angular/core';
 import {BeatService} from './beat.service';
 import {PlaybackService} from './playback.service';
 import {GridSquare} from '../shared/models/grid-square.model';
+import {Subscription} from 'rxjs/index';
 
 function getSquareKey(x: number, y: number): string {
   return `${x}:${y}`;
@@ -9,23 +10,20 @@ function getSquareKey(x: number, y: number): string {
 
 @Injectable()
 export class GridService {
-  currentMeasureIndex = 0;
   highlightedSquares: GridSquare[] = [];
   highlightedSquaresDict = {}; // key is "x:y"
   topLeftHighlightedSquare: GridSquare;
   clipboardSquares: GridSquare[] = [];
 
   constructor(private beatService: BeatService,
-              private playbackService: PlaybackService) {}
+              private playbackService: PlaybackService) {
+    this.playbackService.currentMeasureChanged.subscribe(() => {
+      this.onCurrentMeasureChanged();
+    });
+  }
 
   get currentMeasure() {
-    if (!this.beatService.measures || !this.beatService.measures.length) {
-      return null;
-    }
-    if (this.playbackService.isPlaying) {
-      this.currentMeasureIndex = this.playbackService.currentMeasureIndex;
-    }
-    return this.beatService.measures[this.currentMeasureIndex];
+    return this.playbackService.currentMeasure;
   }
 
   clearHighlightedSquares(): void {
@@ -40,7 +38,7 @@ export class GridService {
         this.highlightedSquaresDict[getSquareKey(row, column)] = true;
       }
     }
-    this.highlightedSquares = this.getSquaresInArea(startX, startY, finishX, finishY);
+    this.highlightedSquares.push(...this.getSquaresInArea(startX, startY, finishX, finishY));
   }
 
   isHighlighted(square: GridSquare): boolean {
@@ -78,5 +76,9 @@ export class GridService {
     }
     this.topLeftHighlightedSquare = squares[0];
     return squares;
+  }
+
+  private onCurrentMeasureChanged() {
+    this.clearHighlightedSquares();
   }
 }

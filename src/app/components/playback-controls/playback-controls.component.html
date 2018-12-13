@@ -1,0 +1,20 @@
+<div class="playback-controls-wrapper">
+  <div class="left-section">
+    <button (click)="togglePlayback()">
+      {{ playbackService.isPlaying ? 'Pause' : 'Play' }}
+    </button>
+  </div>
+  <div class="center-section">
+    <button (click)="onPreviousMeasure()"> < </button>
+    <button *ngFor="let measure of beatService.measures; let index = index"
+            [class.active-measure-button] = "index === playbackService.currentMeasureIndex"
+            (click)="onChangeMeasure(index)">
+      {{ index }}
+    </button>
+    <button (click)="onNextMeasure()"> > </button>
+  </div>
+  <div class="right-section">
+    <button (click)="onAddMeasure()">Add Measure</button>
+    <button (click)="onDeleteMeasure()">Delete Measure</button>
+  </div>
+</div>
