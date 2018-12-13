@@ -6,6 +6,8 @@ import {
 } from '@angular/core';
 import {Coordinate} from '../../shared/interfaces';
 
+const LONG_PRESS_TIME_MS = 500;
+
 export class SelectionRectangleState {
   active: boolean;
   topLeft: Coordinate;
@@ -52,16 +54,18 @@ export class SelectionRectangleComponent implements OnInit, OnChanges, AfterView
   offsetWidth: number;
   scrollX = 0;
   scrollY = 0;
+  isLongPressing = false;
+  longPressTimerId: any;
 
   state: SelectionRectangleState = new SelectionRectangleState();
   lastState: SelectionRectangleState = new SelectionRectangleState();
 
   get displayTop() {
-    return this.state.topLeft.y  - this.offsetTop + this.scrollY;
+    return this.state.topLeft.y + this.scrollY;
   }
 
   get displayLeft() {
-    return this.state.topLeft.x - this.offsetLeft + this.scrollX;
+    return this.state.topLeft.x + this.scrollX;
   }
 
   get displayHeight() {
@@ -100,7 +104,7 @@ export class SelectionRectangleComponent implements OnInit, OnChanges, AfterView
     if (!this.containerElement || !this.state.active) {
       return;
     }
-    if (event.shiftKey) {
+    if (this.isLongPressing) {
       this.scrollX = Math.max(document.documentElement.scrollLeft, document.body.scrollLeft);
       this.scrollY = Math.max(document.documentElement.scrollTop, document.body.scrollTop);
       const x = event.clientX;
@@ -115,8 +119,11 @@ export class SelectionRectangleComponent implements OnInit, OnChanges, AfterView
   }
 
   @HostListener('document:mousedown', ['$event'])
-  onMouseDown(event: MouseEvent) {
-    if (event.shiftKey) {
+    onMouseDown(event: MouseEvent) {
+    this.isLongPressing = false;
+    clearTimeout(this.longPressTimerId);
+    this.longPressTimerId = setTimeout(() => {
+      this.isLongPressing = true;
       this.scrollX = Math.max(document.documentElement.scrollLeft, document.body.scrollLeft);
       this.scrollY = Math.max(document.documentElement.scrollTop, document.body.scrollTop);
       this.origin = {
@@ -129,19 +136,14 @@ export class SelectionRectangleComponent implements OnInit, OnChanges, AfterView
       this.state.topLeft.y = event.clientY;
       this.show();
       this.cd.markForCheck();
-    }
+    }, LONG_PRESS_TIME_MS);
   }
 
   @HostListener('document:mouseup', ['$event'])
   onMouseUp(event: MouseEvent) {
+    clearTimeout(this.longPressTimerId);
+    this.isLongPressing = false;
     this.hide();
-  }
-
-  @HostListener('document:keyup', ['$event'])
-  onKeyUp(event: KeyboardEvent) {
-    if (event.key === 'Shift') {
-      this.hide();
-    }
   }
 
   hide() {

@@ -1,5 +1,5 @@
-<div id="grid-outer-wrapper" class="grid-outer-wrapper" style="position: relative;">
-  <div #gridWrapperDiv class="grid-wrapper">
+<div id="grid-outer-wrapper" class="grid-outer-wrapper" style="position: relative;" (click)="onCancelHighlightedArea()">
+  <div #gridWrapperDiv class="grid-wrapper" (click)="$event.stopPropagation()">
     <div *ngFor="let row of gridService.currentMeasure.squares"
          class="grid-row-wrapper"
          [class.background-inherit]="shouldHideRowOptionsMenu()">
@@ -7,9 +7,7 @@
         <mat-icon>music_note</mat-icon>
       </div>
       <div *ngFor="let square of row"
-           (mousedown)="onSquareMouseDown(square, $event)"
-           (mouseenter)="onSquareMouseEnter(square)"
-           (mouseleave)="onSquareMouseLeave(square)"
+           (click)="onSquareClick(square, $event)"
            [id]="getSquareHtmlId(square.row, square.column)"
            class="grid-square-wrapper"
            style.width="{{ noteWidth + 'px'}}"
@@ -18,9 +16,7 @@
            [class.beat-square]="isBeatColumn(square.column)"
            [class.active-square]="square.on"
            [class.active-column]="isActiveColumn(square.column)"
-           [class.highlighted-square]="gridService.isHighlighted(square)"
-           [class.cursor-fill-square]="mouseContext === mouseContextEnum.FillSquare"
-           [class.cursor-erase-square]="mouseContext === mouseContextEnum.EraseSquare"></div>
+           [class.highlighted-square]="gridService.isHighlighted(square)"></div>
       <div #rowOptionsDiv class="grid-row-options">
         <mat-icon style.visibility="{{shouldHideRowOptionsMenu() ? 'hidden' : ''}}">settings</mat-icon>
         <mat-icon style.visibility="{{shouldHideRowOptionsMenu() ? 'hidden' : ''}}">reorder</mat-icon>

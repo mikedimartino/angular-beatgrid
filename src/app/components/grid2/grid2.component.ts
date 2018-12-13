@@ -1,5 +1,5 @@
 import {
-  AfterViewChecked, AfterViewInit, ChangeDetectionStrategy, ChangeDetectorRef, Component, ElementRef, HostListener, OnDestroy, OnInit,
+  AfterViewChecked, AfterViewInit, Component, ElementRef, HostListener, OnDestroy, OnInit,
   Renderer2,
   ViewChild
 } from '@angular/core';
@@ -12,13 +12,6 @@ import {GridService} from '../../services/grid.service';
 
 const sixteenthNoteWidth = 32;
 const wholeNoteWidth = sixteenthNoteWidth * 16;
-const longPressMs = 300;
-
-enum MouseContext {
-  Default,
-  FillSquare,
-  EraseSquare
-}
 
 @Component({
   selector: 'app-grid2',
@@ -30,14 +23,10 @@ export class Grid2Component implements OnInit, AfterViewInit, OnDestroy, AfterVi
   noteWidth: number;
   noteHeight = 32;
   selectionRectangleActive = false;
-  mouseContextEnum = MouseContext;
-  mouseContext = MouseContext.Default;
-  squareLongPressTimeoutHandler: any;
 
   topLeftSquare: HTMLElement;
   topLeftSquareTop = 0;
   topLeftSquareLeft = 0;
-  bottomRightSquare: HTMLElement;
   shouldUpdateCornerSquares = false;
 
   @ViewChild('gridWrapperDiv') gridWrapperDiv: ElementRef;
@@ -95,46 +84,14 @@ export class Grid2Component implements OnInit, AfterViewInit, OnDestroy, AfterVi
     this.playbackService.setActiveColumn(column);
   }
 
-  onSquareMouseDown(square: GridSquare, event: MouseEvent) {
-    if (event.button !== 0 || event.shiftKey) {
+  onSquareClick(square: GridSquare, event: MouseEvent) {
+    console.log('onSquareClick()', event);
+    if (event.button !== 0) {
       return;
     }
-
     square.toggle();
-
-    clearTimeout(this.squareLongPressTimeoutHandler);
-    this.squareLongPressTimeoutHandler = setTimeout(() => {
-      this.mouseContext = square.on ? MouseContext.FillSquare : MouseContext.EraseSquare;
-    }, longPressMs);
-
     this.playbackService.setColumnSoundActive(square.column, square.row, square.on);
   }
-
-  onSquareMouseEnter(square: GridSquare) {
-    if (this.mouseContext === MouseContext.FillSquare) {
-      square.on = true;
-      this.playbackService.setColumnSoundActive(square.column, square.row, true);
-    } else if (this.mouseContext === MouseContext.EraseSquare) {
-      square.on = false;
-      this.playbackService.setColumnSoundActive(square.column, square.row, false);
-    }
-  }
-
-  onSquareMouseLeave(square: GridSquare) {
-    clearTimeout(this.squareLongPressTimeoutHandler);
-  }
-
-  @HostListener('document:mouseup') onMouseUp() {
-    clearTimeout(this.squareLongPressTimeoutHandler);
-    this.mouseContext = MouseContext.Default;
-  }
-
-  // @HostListener('document:mousedown', ['$event'])
-  // onMouseDown(event: MouseEvent) {
-  //   if (event.which === 1) {
-  //     this.gridService.clearHighlightedSquares();
-  //   }
-  // }
 
   onSelectionRectangleChanged(state: SelectionRectangleState) {
     if (state.active !== this.selectionRectangleActive) {
@@ -175,8 +132,11 @@ export class Grid2Component implements OnInit, AfterViewInit, OnDestroy, AfterVi
   }
 
   private highlightCoveredSquares(state: SelectionRectangleState) {
-    const topLeftX = (state.topLeft.x - this.topLeftSquareLeft) / (this.noteWidth + 2);
-    const topLeftY = (state.topLeft.y - this.topLeftSquareTop) / (this.noteHeight + 2);
+    const scrollX = Math.max(document.documentElement.scrollLeft, document.body.scrollLeft);
+    const scrollY = Math.max(document.documentElement.scrollTop, document.body.scrollTop);
+
+    const topLeftX = (state.topLeft.x - this.topLeftSquareLeft + scrollX) / (this.noteWidth + 2);
+    const topLeftY = (state.topLeft.y - this.topLeftSquareTop + scrollY) / (this.noteHeight + 2);
 
     let rowsCovered = state.height / (this.noteHeight + 2); // + 2 for margin (each square has margin 1)
     let columnsCovered = state.width / (this.noteWidth + 2); // + 2 for margin (each square has margin 1)
@@ -229,9 +189,6 @@ export class Grid2Component implements OnInit, AfterViewInit, OnDestroy, AfterVi
   private updateCornerSquares(): void {
     const topLeftId = this.getSquareHtmlId(0, 0);
     this.topLeftSquare = document.getElementById(topLeftId);
-
-    const bottomRightId = this.getSquareHtmlId(this.beatService.rows - 1, this.beatService.columnsPerMeasure - 1);
-    this.bottomRightSquare = document.getElementById(bottomRightId);
 
     const tlPos = this.getAbsPos(this.topLeftSquare);
     this.topLeftSquareLeft = tlPos.x;

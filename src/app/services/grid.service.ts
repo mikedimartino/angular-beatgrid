@@ -12,6 +12,8 @@ export class GridService {
   currentMeasureIndex = 0;
   highlightedSquares: GridSquare[] = [];
   highlightedSquaresDict = {}; // key is "x:y"
+  topLeftHighlightedSquare: GridSquare;
+  clipboardSquares: GridSquare[] = [];
 
   constructor(private beatService: BeatService,
               private playbackService: PlaybackService) {}
@@ -29,6 +31,7 @@ export class GridService {
   clearHighlightedSquares(): void {
     this.highlightedSquaresDict = {};
     this.highlightedSquares = [];
+    this.topLeftHighlightedSquare = undefined;
   }
 
   setAreaHighlighted(startX: number, startY: number, finishX: number, finishY: number): void {
@@ -45,20 +48,25 @@ export class GridService {
   }
 
   anySquaresHighlighted(): boolean {
-    // return Object.keys(this.highlightedSquaresDict).length > 0;
     return this.highlightedSquares.length > 0;
   }
 
   deleteHighlightedSquares(): void {
-    this.highlightedSquares.forEach(square => {
-      square.on = false;
-    });
+    this.beatService.deleteSquares(this.highlightedSquares);
   }
 
   fillHighlightedSquares(): void {
-    this.highlightedSquares.forEach(square => {
-      square.on = true;
-    });
+    this.beatService.fillSquares(this.highlightedSquares);
+  }
+
+  copyHighlightedSquares(): void {
+    this.clipboardSquares = this.highlightedSquares;
+  }
+
+  pasteHighlightedSquares(topLeftSquare: GridSquare): void {
+    const rowTranslation = topLeftSquare.row - this.topLeftHighlightedSquare.row;
+    const columnTranslation = topLeftSquare.column - this.topLeftHighlightedSquare.column;
+
   }
 
   private getSquaresInArea(startX: number, startY: number, finishX: number, finishY: number): GridSquare[] {
@@ -68,6 +76,7 @@ export class GridService {
         squares.push(this.currentMeasure.squares[row][column]);
       }
     }
+    this.topLeftHighlightedSquare = squares[0];
     return squares;
   }
 }

@@ -5,6 +5,7 @@ import { Beat } from '../shared/models/beat.model';
 import { GridSound } from '../shared/models/grid-sound.model';
 import { Observable, Subject } from 'rxjs/index';
 import {ApiService} from './api.service';
+import {GridSquare} from '../shared/models/grid-square.model';
 
 const soundPathPrefix = 'assets/sounds/musicradar-drum-samples/Drum Kits/Kurzweil Kit 01/';
 export const mockSounds = [
@@ -117,9 +118,26 @@ export class BeatService {
     return this.beatChangedSubject.asObservable();
   }
 
+  getSquareByCoordinates(measure: number, row: number, column: number) {
+
+  }
+
   addMeasure() {
     const measure = new Measure(this.beat.sounds.length, this.columnsPerMeasure);
     this.beat.measures.push(measure);
+    this.onBeatChanged();
+  }
+
+  deleteSquares(squares: GridSquare[]): void {
+    this.modifySquares(squares, square => square.on = false);
+  }
+
+  fillSquares(squares: GridSquare[]): void {
+    this.modifySquares(squares, square => square.on = true);
+  }
+
+  modifySquares(squares: GridSquare[], func: (square: GridSquare) => void) {
+    squares.forEach(square => func(square));
     this.onBeatChanged();
   }
 
@@ -157,7 +175,7 @@ export class BeatService {
   }
 
   // TODO: Update name of this and related properties, since this is only for layout changes (and not tempo).
-  private onBeatChanged(): void {
+  onBeatChanged(): void {
     this.beatChangedSubject.next();
   }
 
