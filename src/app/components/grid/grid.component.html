@@ -3,11 +3,19 @@
     <div *ngFor="let row of gridService.currentMeasure.squares; let i = index"
          class="grid-row-wrapper"
          [class.background-inherit]="shouldHideRowOptionsMenu()">
-      <div #soundIconDiv class="grid-sound-icon"
-           [matTooltip]="beatService.sounds[i].name"
-           matTooltipPosition="left"
-           (click)="onSoundClicked(i)">
-        <mat-icon>music_note</mat-icon>
+      <div #soundOptionsDiv class="sound-options">
+        <div class="change-sound"
+             matTooltip="Change Sound"
+             matTooltipPosition="above"
+             (click)="onChangeSoundClicked(i)">
+          <mat-icon>edit</mat-icon>
+        </div>
+        <div class="grid-sound-icon"
+             [matTooltip]="beatService.sounds[i].name"
+             matTooltipPosition="above"
+             (click)="onSoundClicked(i)">
+          <mat-icon>music_note</mat-icon>
+        </div>
       </div>
       <div *ngFor="let square of row"
            (click)="onSquareClick(square, $event)"
@@ -21,19 +29,13 @@
            [class.active-column]="isActiveColumn(square.column)"
            [class.highlighted-square]="gridService.isHighlighted(square)"></div>
       <div #rowOptionsDiv class="grid-row-options">
-        <!--Settings-->
         <!--<mat-icon [style.visibility]="rowOptionsVisibility">settings</mat-icon>-->
-
-        <!--Reorder-->
         <mat-icon matTooltip="Reorder" matTooltipPosition="above"
-                  [style.visibility]="rowOptionsVisibility">reorder</mat-icon>
-
-        <!--Add Row-->
+                  [style.visibility]="rowOptionsVisibility"
+                  [style.cursor]="'move'">reorder</mat-icon>
         <mat-icon matTooltip="Add Row" matTooltipPosition="above"
                   [style.visibility]="rowOptionsVisibility"
                   (click)="onAddRowClicked(i)">add</mat-icon>
-
-        <!--Delete Row-->
         <mat-icon matTooltip="Delete Row" matTooltipPosition="above"
                   [style.visibility]="rowOptionsVisibility"
                   style.cursor="{{beatService.rows === 1 ? 'not-allowed' : ''}}"

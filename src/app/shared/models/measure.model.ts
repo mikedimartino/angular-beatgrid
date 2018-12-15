@@ -92,11 +92,23 @@ export class Measure {
       newRow.push(new GridSquare(row, column));
     }
     this.squares.splice(row, 0, newRow);
+
+    // Update row for squares in all rows after added row
+    for (let i = row + 1; i < this.squares.length; i++) {
+      this.squares[i].forEach(square => square.row++);
+    }
   }
 
   deleteRow(row: number): void {
     if (this.squares.length > 1) {
       this.squares.splice(row, 1);
+
+      // Update row for squares in all rows after deleted row
+      for (let i = row; i < this.squares.length; i++) {
+        this.squares[i].forEach(square => {
+          square.row--;
+        });
+      }
     }
   }
 

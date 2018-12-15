@@ -132,7 +132,7 @@ export class BeatService {
   }
 
   changeSound(row: number, newSoundKey: string) {
-    this.beat.sounds[row] = new GridSound(newSoundKey, newSoundKey)
+    this.beat.sounds[row] = new GridSound(newSoundKey, newSoundKey);
   }
 
   getBeatChangedObservable(): Observable<any> {
@@ -140,8 +140,8 @@ export class BeatService {
   }
 
   addRow(index: number) {
-    this.measures.forEach(measure => measure.addRow(index));
-    this.sounds.splice(index, 0, this.sounds[index]);
+    this.measures.forEach(measure => measure.addRow(index + 1));
+    this.sounds.splice(index + 1, 0, this.sounds[index]);
   }
 
   deleteRow(index: number) {

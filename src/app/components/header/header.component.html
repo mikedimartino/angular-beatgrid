@@ -27,9 +27,15 @@
       <app-note-type-dropdown [selection]="beatService.divisionLevel"
                               (selectionChange)="onChangeDivisionLevel($event)"></app-note-type-dropdown>
     </div>
-    <div>
+    <div class="tempo">
       <strong>Tempo: </strong>
-      <input type="number" [value]="beatService.tempo" (input)="onTempoChanged($event.target.value)">
+      <mat-slider ticketInterval="1"
+                  min="1" max="300"
+                  thumbLabel
+                  class="noselect"
+                  [value]="beatService.tempo"
+                  (mousedown)="$event.stopPropagation()"
+                  (change)="onTempoChanged($event.value)"></mat-slider>
     </div>
   </div>
 </div>

@@ -1,7 +1,7 @@
 import {Component, Inject, OnInit} from '@angular/core';
 import { SoundService } from '../../services/sound.service';
 import { S3Object } from '../../shared/interfaces';
-import {MAT_DIALOG_DATA} from '@angular/material';
+import {MAT_DIALOG_DATA, MatDialogRef} from '@angular/material';
 import {GridSound} from '../../shared/models/grid-sound.model';
 import {BeatService} from '../../services/beat.service';
 
@@ -21,6 +21,7 @@ export class SoundBrowserComponent implements OnInit {
   viewingSoundDetails = false;
 
   constructor(@Inject(MAT_DIALOG_DATA) data,
+              private dialogRef: MatDialogRef<SoundBrowserComponent>,
               private beatService: BeatService,
               private soundService: SoundService) {
     if (data) {
@@ -61,6 +62,7 @@ export class SoundBrowserComponent implements OnInit {
   // TODO: Improve this / clean up
   selectSound() {
     this.beatService.changeSound(this.rowIndex, this.files[0].key);
+    this.dialogRef.close();
   }
 
   private getSounds(folder: string = '') {

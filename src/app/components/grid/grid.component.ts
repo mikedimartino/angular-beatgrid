@@ -28,7 +28,7 @@ export class GridComponent implements OnInit, AfterViewInit, OnDestroy, AfterVie
   shouldUpdateCornerSquares = false;
 
   @ViewChild('gridWrapperDiv') gridWrapperDiv: ElementRef;
-  @ViewChild('soundIconDiv') soundIconDiv: ElementRef;
+  @ViewChild('soundOptionsDiv') soundOptionsDiv: ElementRef;
   @ViewChild('rowOptionsDiv') rowOptionsDiv: ElementRef;
   @ViewChild('footerWrapperDiv') footerWrapperDiv: ElementRef;
   @ViewChild('hlAreaMenuContainerDiv') hlAreaMenuContainerDiv: ElementRef;
@@ -58,7 +58,6 @@ export class GridComponent implements OnInit, AfterViewInit, OnDestroy, AfterVie
   ngAfterViewChecked() {
     if (this.shouldUpdateCornerSquares) {
       setTimeout(() => this.updateCornerSquares(), 0);
-      // this.updateCornerSquares();
       this.shouldUpdateCornerSquares = false;
     }
   }
@@ -88,7 +87,11 @@ export class GridComponent implements OnInit, AfterViewInit, OnDestroy, AfterVie
 
   onSoundClicked(row: number) {
     const sound = this.beatService.sounds[row];
-    // this.playbackService.playSound(sound.key);
+    this.playbackService.playSound(sound.key);
+  }
+
+  onChangeSoundClicked(row: number) {
+    const sound = this.beatService.sounds[row];
     this.openSoundLibrary(sound.key, row);
   }
 
@@ -188,12 +191,12 @@ export class GridComponent implements OnInit, AfterViewInit, OnDestroy, AfterVie
   private updateStyles(): void {
     this.updateNoteWidth();
 
-    const soundIconDivWidth = this.soundIconDiv.nativeElement.clientWidth;
+    const soundOptionsDivWidth = this.soundOptionsDiv.nativeElement.clientWidth;
     const rowOptionsDivWidth = this.rowOptionsDiv.nativeElement.clientWidth;
-    const gridMarginLeft = rowOptionsDivWidth - soundIconDivWidth;
+    const gridMarginLeft = rowOptionsDivWidth - soundOptionsDivWidth;
     this.renderer.setStyle(this.gridWrapperDiv.nativeElement, 'margin-left', `${gridMarginLeft}px`);
 
-    this.renderer.setStyle(this.footerWrapperDiv.nativeElement, 'margin-left', `${soundIconDivWidth}px`);
+    this.renderer.setStyle(this.footerWrapperDiv.nativeElement, 'margin-left', `${soundOptionsDivWidth}px`);
 
     if (this.hlAreaMenuContainerDiv) {
       const hlAreaMenuContainerDivHeight =

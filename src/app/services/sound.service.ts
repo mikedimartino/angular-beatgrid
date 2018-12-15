@@ -13,7 +13,7 @@ export class SoundService {
 
   constructor(private apiService: ApiService) {}
 
-  getSoundsByFolder(folder: string = '/'): Observable<any> {
+  getSoundsByFolder(folder: string = ''): Observable<S3Object[]> {
     if (this.s3Cache[folder]) {
       return of(this.s3Cache[folder]);
     }
@@ -36,7 +36,7 @@ export class SoundService {
           const arrayBuffer = <ArrayBuffer> new Uint8Array(response.Body.data).buffer;
           this.audioContext.decodeAudioData(arrayBuffer).then((audioBuffer: AudioBuffer) => {
             this.audioBuffers[key] = audioBuffer;
-            console.log(`Downloaded audiobuffer for key: ${key}`);
+            // console.log(`Downloaded audiobuffer for key: ${key}`);
           });
         });
       } else {

@@ -6,7 +6,10 @@ import { AppComponent } from './app.component';
 import { BeatService } from './services/beat.service';
 import { FormsModule } from '@angular/forms';
 import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
-import {MatCardModule, MatIconModule, MatInputModule, MatMenuModule, MatProgressSpinnerModule, MatTooltipModule} from '@angular/material';
+import {
+  MatCardModule, MatIconModule, MatInputModule, MatMenuModule, MatProgressSpinnerModule, MatSliderModule,
+  MatTooltipModule
+} from '@angular/material';
 import { MatSelectModule } from '@angular/material/select';
 import { MatDialogModule } from '@angular/material/dialog';
 import { EditTimeSignatureComponent } from './components/edit-time-signature/edit-time-signature.component';
@@ -50,6 +53,7 @@ import { BeatLibraryComponent } from './components/beat-library/beat-library.com
     MatMenuModule,
     MatProgressSpinnerModule,
     MatSelectModule,
+    MatSliderModule,
     MatTooltipModule
   ],
   providers: [

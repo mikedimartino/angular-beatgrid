@@ -31,8 +31,32 @@
     }
   }
 
+  .sound-options div {
+    display: inline-block;
+  }
+
+  .grid-sound-icon {
+    cursor: pointer;
+    padding: 0 10px;
+  }
+
+  .change-sound {
+    mat-icon {
+      display: inline-block;
+      color: #AEB6BF; // TODO: Variable
+      cursor: pointer;
+      padding-left: 5px;
+      user-select: none;
+      visibility: hidden;
+
+      &:hover {
+        color: black;
+      }
+    }
+  }
+
   &:hover {
-    .grid-row-options mat-icon {
+    .grid-row-options mat-icon, .change-sound mat-icon {
       visibility: visible;
     }
 
@@ -40,10 +64,7 @@
   }
 }
 
-.grid-sound-icon {
-  cursor: pointer;
-  padding: 0 10px;
-}
+
 
 .grid-square-wrapper {
   border-radius: 3px;
