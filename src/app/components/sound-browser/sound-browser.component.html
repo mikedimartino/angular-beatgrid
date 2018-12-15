@@ -13,13 +13,19 @@
   </div>
 
   <mat-spinner *ngIf="loading"></mat-spinner>
-  <ul *ngIf="!loading">
-    <li *ngFor="let file of files"
-        class="file"
-        (click)="onObjectClicked(file)">
-      <mat-icon *ngIf="isFolder(file)">folder_open</mat-icon>
-      <mat-icon *ngIf="!isFolder(file)" (click)="playSound(file);$event.stopPropagation()">play_circle_outline</mat-icon>
-      <span>{{ file.key }}</span>
-    </li>
-  </ul>
+  <div *ngIf="!loading">
+    <ul>
+      <li *ngFor="let file of files"
+          class="file"
+          (click)="onObjectClicked(file)">
+        <mat-icon *ngIf="isFolder(file)">folder_open</mat-icon>
+        <mat-icon *ngIf="!isFolder(file)" (click)="playSound(file);$event.stopPropagation()">play_circle_outline</mat-icon>
+        <span>{{ file.key }}</span>
+      </li>
+    </ul>
+
+    <div *ngIf="viewingSoundDetails">
+      <button (click)="selectSound()">Select</button>
+    </div>
+  </div>
 </div>

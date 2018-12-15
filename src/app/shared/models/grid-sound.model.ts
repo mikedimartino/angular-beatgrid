@@ -1,11 +1,10 @@
 export class GridSound {
-  readonly id: number;
-  readonly name: string;
-  readonly filePath: string;
+  key: string;
+  name: string;
+  // category: string / enum
 
-  constructor(id: number, name: string, filePath: string) {
-    this.id = id;
+  constructor(key: string, name: string) {
+    this.key = key;
     this.name = name;
-    this.filePath = filePath;
   }
 }

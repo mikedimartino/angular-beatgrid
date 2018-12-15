@@ -6,17 +6,29 @@ import { GridSound } from '../shared/models/grid-sound.model';
 import { Observable, Subject } from 'rxjs/index';
 import {ApiService} from './api.service';
 import {GridSquare} from '../shared/models/grid-square.model';
+import {SoundService} from './sound.service';
 
-const soundPathPrefix = 'assets/sounds/musicradar-drum-samples/Drum Kits/Kurzweil Kit 01/';
-export const mockSounds = [
-  new GridSound(1, 'closed hihat', soundPathPrefix + 'CYCdh_Kurz01-ClHat.wav'),
-  new GridSound(2, 'open hihat', soundPathPrefix + 'CYCdh_Kurz01-OpHat01.wav'),
-  new GridSound(3, 'ride', soundPathPrefix + 'CYCdh_Kurz01-Ride01.wav'),
-  new GridSound(4, 'crash', soundPathPrefix + 'CYCdh_Kurz01-Crash01.wav'),
-  new GridSound(5, 'tom 1', soundPathPrefix + 'CYCdh_Kurz01-Tom02.wav'),
-  new GridSound(6, 'tom 2', soundPathPrefix + 'CYCdh_Kurz01-Tom04.wav'),
-  new GridSound(7, 'snare', soundPathPrefix + 'CYCdh_Kurz01-Snr01.wav'),
-  new GridSound(8, 'kick', soundPathPrefix + 'CYCdh_Kurz01-Kick01.wav')
+// const soundPathPrefix = 'assets/sounds/musicradar-drum-samples/Drum Kits/Kurzweil Kit 01/';
+// export const mockSounds = [
+//   new GridSound(1, 'closed hihat', soundPathPrefix + 'CYCdh_Kurz01-ClHat.wav'),
+//   new GridSound(2, 'open hihat', soundPathPrefix + 'CYCdh_Kurz01-OpHat01.wav'),
+//   new GridSound(3, 'ride', soundPathPrefix + 'CYCdh_Kurz01-Ride01.wav'),
+//   new GridSound(4, 'crash', soundPathPrefix + 'CYCdh_Kurz01-Crash01.wav'),
+//   new GridSound(5, 'tom 1', soundPathPrefix + 'CYCdh_Kurz01-Tom02.wav'),
+//   new GridSound(6, 'tom 2', soundPathPrefix + 'CYCdh_Kurz01-Tom04.wav'),
+//   new GridSound(7, 'snare', soundPathPrefix + 'CYCdh_Kurz01-Snr01.wav'),
+//   new GridSound(8, 'kick', soundPathPrefix + 'CYCdh_Kurz01-Kick01.wav')
+// ];
+
+const defaultSounds: GridSound[] = [
+  new GridSound('Drum Kits/Kurzweil Kit 01/CYCdh_Kurz01-Crash01.mp3', 'Crash 1'),
+  new GridSound('Drum Kits/Kurzweil Kit 01/CYCdh_Kurz01-Ride01.mp3', 'Ride 1'),
+  new GridSound('Drum Kits/Kurzweil Kit 01/CYCdh_Kurz01-Tom01.mp3', 'Tom 1'),
+  new GridSound('Drum Kits/Kurzweil Kit 01/CYCdh_Kurz01-Tom02.mp3', 'Tom 2'),
+  new GridSound('Drum Kits/Kurzweil Kit 01/CYCdh_Kurz01-OpHat01.mp3', 'Open Hi-Hat 1'),
+  new GridSound('Drum Kits/Kurzweil Kit 01/CYCdh_Kurz01-ClHat.mp3', 'Closed Hi-Hat'),
+  new GridSound('Drum Kits/Kurzweil Kit 01/CYCdh_Kurz01-Snr01.mp3', 'Snare 1'),
+  new GridSound('Drum Kits/Kurzweil Kit 01/CYCdh_Kurz01-Kick01.mp3', 'Kick 1'),
 ];
 
 @Injectable()
@@ -25,14 +37,19 @@ export class BeatService {
   beats: Beat[] = [];
   beatChangedSubject = new Subject();
   isNew = false;
+  loading = false;
 
-  constructor(private apiService: ApiService) {
+  constructor(private apiService: ApiService,
+              private soundService: SoundService) {
+    this.loading = true;
     this.new();
     this.apiService.readBeats().subscribe(beats => {
       this.beats = beats;
       if (beats && beats.length) {
         this.selectBeat(beats[0].id);
       }
+      this.soundService.downloadSounds(this.beat.sounds);
+      this.onBeatChanged();
     });
   }
 
@@ -114,12 +131,25 @@ export class BeatService {
     return this.beat.sounds[row];
   }
 
+  changeSound(row: number, newSoundKey: string) {
+    this.beat.sounds[row] = new GridSound(newSoundKey, newSoundKey)
+  }
+
   getBeatChangedObservable(): Observable<any> {
     return this.beatChangedSubject.asObservable();
   }
 
-  getSquareByCoordinates(measure: number, row: number, column: number) {
+  addRow(index: number) {
+    this.measures.forEach(measure => measure.addRow(index));
+    this.sounds.splice(index, 0, this.sounds[index]);
+  }
 
+  deleteRow(index: number) {
+    if (this.rows > 1) {
+      this.measures.forEach(measure => measure.deleteRow(index));
+      this.sounds.splice(index, 1);
+      this.onBeatChanged();
+    }
   }
 
   addMeasure() {
@@ -194,10 +224,9 @@ export class BeatService {
       tempo: 60,
       timeSignature,
       divisionLevel,
-      sounds: mockSounds,
+      sounds: defaultSounds,
       measures: [
-        // new Measure(mockSounds.length, columnsPerMeasure),
-        new Measure(mockSounds.length, columnsPerMeasure)
+        new Measure(defaultSounds.length, columnsPerMeasure)
       ]
     };
   }
@@ -212,9 +241,9 @@ export class BeatService {
       tempo: 60,
       timeSignature,
       divisionLevel,
-      sounds: mockSounds,
+      sounds: defaultSounds,
       measures: [
-        new Measure(mockSounds.length, columnsPerMeasure)
+        new Measure(defaultSounds.length, columnsPerMeasure)
       ]
     };
   }

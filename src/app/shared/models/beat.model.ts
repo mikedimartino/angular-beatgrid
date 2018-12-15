@@ -1,6 +1,7 @@
 import {TimeSignature} from './time-signature.model';
 import {GridSound} from './grid-sound.model';
 import {Measure} from './measure.model';
+import {GridSquare} from './grid-square.model';
 
 export class Beat {
   id: number;
@@ -27,4 +28,5 @@ export class Beat {
     decompressedBeat.measuresCondensed = null;
     return decompressedBeat;
   }
+
 }

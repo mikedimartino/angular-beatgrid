@@ -3,11 +3,10 @@ import { HttpClientModule } from '@angular/common/http';
 import { NgModule } from '@angular/core';
 
 import { AppComponent } from './app.component';
-import { GridComponent } from './components/grid/grid.component';
 import { BeatService } from './services/beat.service';
 import { FormsModule } from '@angular/forms';
 import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
-import {MatCardModule, MatIconModule, MatInputModule, MatMenuModule, MatProgressSpinnerModule} from '@angular/material';
+import {MatCardModule, MatIconModule, MatInputModule, MatMenuModule, MatProgressSpinnerModule, MatTooltipModule} from '@angular/material';
 import { MatSelectModule } from '@angular/material/select';
 import { MatDialogModule } from '@angular/material/dialog';
 import { EditTimeSignatureComponent } from './components/edit-time-signature/edit-time-signature.component';
@@ -19,7 +18,7 @@ import { AuthService } from './services/auth.service';
 import { LoginComponent } from './components/login/login.component';
 import { SoundBrowserComponent } from './components/sound-browser/sound-browser.component';
 import { SoundService } from './services/sound.service';
-import { Grid2Component } from './components/grid2/grid2.component';
+import { GridComponent } from './components/grid/grid.component';
 import { SelectionRectangleComponent } from './components/selection-rectangle/selection-rectangle.component';
 import {GridService} from './services/grid.service';
 import { HeaderComponent } from './components/header/header.component';
@@ -31,7 +30,6 @@ import { BeatLibraryComponent } from './components/beat-library/beat-library.com
     AppComponent,
     EditTimeSignatureComponent,
     GridComponent,
-    Grid2Component,
     LoginComponent,
     NoteTypeDropdownComponent,
     SelectionRectangleComponent,
@@ -51,7 +49,8 @@ import { BeatLibraryComponent } from './components/beat-library/beat-library.com
     MatInputModule,
     MatMenuModule,
     MatProgressSpinnerModule,
-    MatSelectModule
+    MatSelectModule,
+    MatTooltipModule
   ],
   providers: [
     ApiService,

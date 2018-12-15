@@ -1,7 +1,9 @@
-import { Component, OnInit } from '@angular/core';
+import {Component, Inject, OnInit} from '@angular/core';
 import { SoundService } from '../../services/sound.service';
-import { ApiService } from '../../services/api.service';
 import { S3Object } from '../../shared/interfaces';
+import {MAT_DIALOG_DATA} from '@angular/material';
+import {GridSound} from '../../shared/models/grid-sound.model';
+import {BeatService} from '../../services/beat.service';
 
 const SOUND_LIBRARY_ROOT = 'Drum Kits/';
 
@@ -14,20 +16,28 @@ export class SoundBrowserComponent implements OnInit {
   files = [];
   loading = false;
   breadcrumbs: string[] = [];
+  openToKey = SOUND_LIBRARY_ROOT;
+  rowIndex = 0;
+  viewingSoundDetails = false;
 
-  constructor(private soundService: SoundService,
-              private apiService: ApiService) {
+  constructor(@Inject(MAT_DIALOG_DATA) data,
+              private beatService: BeatService,
+              private soundService: SoundService) {
+    if (data) {
+      this.openToKey = data.soundKey;
+      this.rowIndex = data.rowIndex;
+    }
   }
 
   ngOnInit() {
-    this.getSounds(SOUND_LIBRARY_ROOT);
+    this.getSounds(this.openToKey);
   }
 
   onObjectClicked(file: S3Object) {
     this.getSounds(file.key);
   }
 
-  isFolder(file: S3Object) {
+  isFolder(file: S3Object): boolean {
     return file.key.endsWith('/');
   }
 
@@ -48,12 +58,18 @@ export class SoundBrowserComponent implements OnInit {
     this.soundService.playSound(file.key);
   }
 
+  // TODO: Improve this / clean up
+  selectSound() {
+    this.beatService.changeSound(this.rowIndex, this.files[0].key);
+  }
+
   private getSounds(folder: string = '') {
     this.updateBreadcrumbs(folder);
     this.loading = true;
-    this.soundService.getSounds(folder).subscribe(response => {
+    this.soundService.getSoundsByFolder(folder).subscribe(response => {
       this.loading = false;
       this.files = response;
+      this.viewingSoundDetails = this.files.length === 1 && !this.isFolder(this.files[0]);
     });
   }
 

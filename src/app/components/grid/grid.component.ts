@@ -1,66 +1,74 @@
-import { Component, HostListener, OnDestroy, OnInit } from '@angular/core';
-import { GridSquare } from '../../shared/models/grid-square.model';
-import { GridSound } from '../../shared/models/grid-sound.model';
-import { PlaybackService } from '../../services/playback.service';
-import { BeatService } from '../../services/beat.service';
-import { Subscription } from 'rxjs/index';
-import { MatDialog, MatDialogConfig } from '@angular/material';
-import { EditTimeSignatureComponent } from '../edit-time-signature/edit-time-signature.component';
-import { Beat } from '../../shared/models/beat.model';
-import { AuthService } from '../../services/auth.service';
-import { LoginComponent } from '../login/login.component';
-import { ApiService } from '../../services/api.service';
-import { SoundBrowserComponent } from '../sound-browser/sound-browser.component';
+import { AfterViewChecked, AfterViewInit, Component, ElementRef, OnDestroy, OnInit, Renderer2, ViewChild } from '@angular/core';
+import {BeatService} from '../../services/beat.service';
+import {Subscription} from 'rxjs/index';
+import {PlaybackService} from '../../services/playback.service';
+import {SelectionRectangleState} from '../selection-rectangle/selection-rectangle.component';
+import {GridSquare} from '../../shared/models/grid-square.model';
+import {GridService} from '../../services/grid.service';
+import {SoundBrowserComponent} from '../sound-browser/sound-browser.component';
+import {MatDialog, MatDialogConfig} from '@angular/material';
 
-const wholeNoteWidth = 32 * 16;
-const noteMargin = 1;
-const longPressMs = 500;
-
-enum MouseContext {
-  Default,
-  FillSquare,
-  EraseSquare
-}
+const sixteenthNoteWidth = 32;
+const wholeNoteWidth = sixteenthNoteWidth * 16;
 
 @Component({
   selector: 'app-grid',
   templateUrl: './grid.component.html',
-  styleUrls: ['./grid.component.scss'],
-  providers: []
+  styleUrls: ['./grid.component.scss']
 })
-export class GridComponent implements OnInit, OnDestroy {
-  noteWidth: number;
-  gridWidth: number;
+export class GridComponent implements OnInit, AfterViewInit, OnDestroy, AfterViewChecked {
   beatChangedSubscription: Subscription;
-  mouseContextEnum = MouseContext;
-  mouseContext = MouseContext.Default;
-  squareLongPressTimeoutHandler: any;
+  noteWidth: number;
+  noteHeight = 32;
+  selectionRectangleActive = false;
 
-  constructor(public beatService: BeatService,
-              public playbackService: PlaybackService,
-              public userService: AuthService,
-              private dialog: MatDialog,
-              private apiService: ApiService) {
+  topLeftSquare: HTMLElement;
+  topLeftSquareTop = 0;
+  topLeftSquareLeft = 0;
+  shouldUpdateCornerSquares = false;
+
+  @ViewChild('gridWrapperDiv') gridWrapperDiv: ElementRef;
+  @ViewChild('soundIconDiv') soundIconDiv: ElementRef;
+  @ViewChild('rowOptionsDiv') rowOptionsDiv: ElementRef;
+  @ViewChild('footerWrapperDiv') footerWrapperDiv: ElementRef;
+  @ViewChild('hlAreaMenuContainerDiv') hlAreaMenuContainerDiv: ElementRef;
+
+  constructor(
+    public beatService: BeatService,
+    private dialog: MatDialog,
+    public gridService: GridService,
+    private renderer: Renderer2,
+    public playbackService: PlaybackService) {}
+
+  get rowOptionsVisibility(): string {
+    return this.selectionRectangleActive || this.gridService.anySquaresHighlighted() ? 'hidden' : '';
   }
 
   ngOnInit() {
-    this.calculateWidths();
-    this.beatChangedSubscription = this.beatService.getBeatChangedObservable().subscribe(() => {
-      this.calculateWidths();
-    });
+    this.updateNoteWidth();
+    this.beatChangedSubscription = this.beatService.getBeatChangedObservable()
+      .subscribe(() => {
+        this.updateStyles();
+      });
+  }
+
+  ngAfterViewInit() {
+  }
+
+  ngAfterViewChecked() {
+    if (this.shouldUpdateCornerSquares) {
+      setTimeout(() => this.updateCornerSquares(), 0);
+      // this.updateCornerSquares();
+      this.shouldUpdateCornerSquares = false;
+    }
   }
 
   ngOnDestroy() {
     this.beatChangedSubscription.unsubscribe();
   }
 
-  onLoginClicked() {
-    const dialogConfig = new MatDialogConfig();
-    dialogConfig.data = {
-      timeSignature: this.beatService.timeSignature
-    };
-    dialogConfig.panelClass = 'no-padding';
-    this.dialog.open(LoginComponent, dialogConfig);
+  isActiveColumn(column: number) {
+    return column === this.playbackService.activeColumn;
   }
 
   isBeatColumn(column: number) {
@@ -74,120 +82,152 @@ export class GridComponent implements OnInit, OnDestroy {
     return '&#9679;';
   }
 
-  togglePlayback() {
-    if (!this.playbackService.isPlaying) {
-      this.playbackService.startPlayback();
-    } else {
-      this.playbackService.stopPlayback();
-    }
-  }
-
-  onSquareMouseDown(square: GridSquare, event: MouseEvent) {
-    if (event.button !== 0) {
-      return;
-    }
-
-    square.toggle();
-
-    clearTimeout(this.squareLongPressTimeoutHandler);
-    this.squareLongPressTimeoutHandler = setTimeout(() => {
-      this.mouseContext = square.on ? MouseContext.FillSquare : MouseContext.EraseSquare;
-    }, longPressMs);
-
-    this.playbackService.setColumnSoundActive(square.column, square.row, square.on);
-  }
-
-  onSquareMouseEnter(square: GridSquare) {
-    if (this.mouseContext === MouseContext.FillSquare) {
-      square.on = true;
-      this.playbackService.setColumnSoundActive(square.column, square.row, true);
-    } else if (this.mouseContext === MouseContext.EraseSquare) {
-      square.on = false;
-      this.playbackService.setColumnSoundActive(square.column, square.row, false);
-    }
-  }
-
-  onSquareMouseLeave(square: GridSquare) {
-    clearTimeout(this.squareLongPressTimeoutHandler);
-  }
-
-  @HostListener('window:mouseup') onMouseUp() {
-    clearTimeout(this.squareLongPressTimeoutHandler);
-    this.mouseContext = MouseContext.Default;
-  }
-
-  onSoundClicked(sound: GridSound) {
-    this.playbackService.playSound(sound.id);
-  }
-
-  openSoundLibrary() {
-    const dialogConfig = new MatDialogConfig();
-    dialogConfig.panelClass = 'no-padding';
-    this.dialog.open(SoundBrowserComponent, dialogConfig);
-  }
-
   onFooterClicked(column: number) {
     this.playbackService.setActiveColumn(column);
   }
 
-  onTempoChanged(value: number) {
-    this.beatService.setTempo(value);
-    this.playbackService.updateColumnDuration();
+  onSoundClicked(row: number) {
+    const sound = this.beatService.sounds[row];
+    // this.playbackService.playSound(sound.key);
+    this.openSoundLibrary(sound.key, row);
   }
 
-  onAddMeasure() {
-    this.beatService.addMeasure();
-  }
-
-  onChangeMeasure(index: number) {
-    this.playbackService.changeMeasure(index);
-  }
-
-  onPreviousMeasure() {
-    this.playbackService.nextMeasure(true);
-  }
-
-  onNextMeasure() {
-    this.playbackService.nextMeasure();
-  }
-
-  onChangeDivisionLevel(value: number) {
-    this.beatService.setDivisionLevel(value);
-  }
-
-  openTsDialog() {
+  openSoundLibrary(soundKey: string, rowIndex: number) {
     const dialogConfig = new MatDialogConfig();
-    dialogConfig.data = {
-      timeSignature: this.beatService.timeSignature
-    };
-    const dialogRef = this.dialog.open(EditTimeSignatureComponent, dialogConfig);
-    dialogRef.afterClosed().subscribe(timeSignature => {
-      if (timeSignature) {
-        this.beatService.setTimeSignature(timeSignature);
+    dialogConfig.panelClass = 'no-padding';
+    dialogConfig.data = { soundKey, rowIndex };
+    this.dialog.open(SoundBrowserComponent, dialogConfig);
+  }
+
+  onSquareClick(square: GridSquare, event: MouseEvent) {
+    if (event.button !== 0) {
+      return;
+    }
+    square.toggle();
+    this.playbackService.setColumnSoundActive(square.column, square.row, square.on);
+  }
+
+  onAddRowClicked(index: number) {
+    this.beatService.addRow(index);
+  }
+
+  onDeleteRowClicked(index: number) {
+    this.beatService.deleteRow(index);
+  }
+
+  onSelectionRectangleChanged(state: SelectionRectangleState) {
+    if (state.active !== this.selectionRectangleActive) {
+      this.selectionRectangleActive = state.active;
+      if (!state.active) {
+        this.highlightCoveredSquares(state);
       }
-    });
+    }
   }
 
-  onBeatClicked(id: number) {
-    this.beatService.selectBeat(id);
+  getSquareHtmlId(row: number, column: number): string {
+    return `square${row}_${column}`;
   }
 
-  onDeleteBeatClicked(id: number) {
-    this.beatService.delete(id);
+  shouldHideRowOptionsMenu(): boolean {
+    return this.selectionRectangleActive || this.gridService.anySquaresHighlighted();
   }
 
-  save() {
-    this.beatService.beat.name = 'Beat ' + Math.floor(Math.random() * 1000);
-    this.beatService.save();
+  // Highlighted area section
+  onCopyHighlightedArea() {
+    console.log('Copy');
   }
 
-  new() {
-    this.beatService.new();
+  onCutHighlightedArea() {
+    console.log('Cut');
   }
 
-  private calculateWidths(): void {
+  onFillHighlightedArea() {
+    this.gridService.fillHighlightedSquares();
+  }
+
+  onDeleteHighlightedArea() {
+    this.gridService.deleteHighlightedSquares();
+  }
+
+  onCancelHighlightedArea() {
+    this.gridService.clearHighlightedSquares();
+  }
+
+  private highlightCoveredSquares(state: SelectionRectangleState) {
+    const scrollX = Math.max(document.documentElement.scrollLeft, document.body.scrollLeft);
+    const scrollY = Math.max(document.documentElement.scrollTop, document.body.scrollTop);
+
+    const topLeftX = (state.topLeft.x - this.topLeftSquareLeft + scrollX) / (this.noteWidth + 2);
+    const topLeftY = (state.topLeft.y - this.topLeftSquareTop + scrollY) / (this.noteHeight + 2);
+
+    let rowsCovered = state.height / (this.noteHeight + 2); // + 2 for margin (each square has margin 1)
+    let columnsCovered = state.width / (this.noteWidth + 2); // + 2 for margin (each square has margin 1)
+
+    let startX = topLeftX;
+    if (topLeftX < 0) {
+      columnsCovered += topLeftX;
+      startX = 0;
+    }
+    let finishX = startX + columnsCovered;
+
+    let startY = topLeftY;
+    if (topLeftY < 0) {
+      rowsCovered += topLeftY;
+      startY = 0;
+    }
+    let finishY = startY + rowsCovered;
+
+    startX = Math.floor(startX);
+    startY = Math.floor(startY);
+    finishX = Math.min(Math.floor(finishX), this.beatService.columnsPerMeasure - 1);
+    finishY = Math.min(Math.floor(finishY), this.beatService.rows - 1);
+
+    this.gridService.setAreaHighlighted(startX, startY, finishX, finishY);
+  }
+
+  private updateStyles(): void {
+    this.updateNoteWidth();
+
+    const soundIconDivWidth = this.soundIconDiv.nativeElement.clientWidth;
+    const rowOptionsDivWidth = this.rowOptionsDiv.nativeElement.clientWidth;
+    const gridMarginLeft = rowOptionsDivWidth - soundIconDivWidth;
+    this.renderer.setStyle(this.gridWrapperDiv.nativeElement, 'margin-left', `${gridMarginLeft}px`);
+
+    this.renderer.setStyle(this.footerWrapperDiv.nativeElement, 'margin-left', `${soundIconDivWidth}px`);
+
+    if (this.hlAreaMenuContainerDiv) {
+      const hlAreaMenuContainerDivHeight =
+        this.gridWrapperDiv.nativeElement.clientHeight - this.footerWrapperDiv.nativeElement.clientHeight;
+      this.renderer.setStyle(this.hlAreaMenuContainerDiv.nativeElement, 'height', `${hlAreaMenuContainerDivHeight}px`);
+      this.renderer.setStyle(this.hlAreaMenuContainerDiv.nativeElement, 'width', `${rowOptionsDivWidth}px`);
+    }
+
+    this.shouldUpdateCornerSquares = true;
+  }
+
+  private updateNoteWidth(): void {
     this.noteWidth = wholeNoteWidth / this.beatService.divisionLevel;
-    this.gridWidth = (this.noteWidth + (2 * noteMargin)) * this.beatService.columnsPerMeasure;
+  }
+
+  private updateCornerSquares(): void {
+    const topLeftId = this.getSquareHtmlId(0, 0);
+    this.topLeftSquare = document.getElementById(topLeftId);
+
+    const tlPos = this.getAbsPos(this.topLeftSquare);
+    this.topLeftSquareLeft = tlPos.x;
+    this.topLeftSquareTop = tlPos.y;
+  }
+
+  private getAbsPos(element: any): any {
+    let left = 0;
+    let top = 0;
+    if (element.offsetParent) {
+      do {
+        left += element.offsetLeft;
+        top += element.offsetTop;
+      } while (element = element.offsetParent);
+    }
+    return { x: left, y: top };
   }
 
 }

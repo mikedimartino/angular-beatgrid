@@ -85,4 +85,19 @@ export class Measure {
       return newRow;
     });
   }
+
+  addRow(row: number): void {
+    const newRow: GridSquare[] = [];
+    for (let column = 0; column < this.numColumns; column++) {
+      newRow.push(new GridSquare(row, column));
+    }
+    this.squares.splice(row, 0, newRow);
+  }
+
+  deleteRow(row: number): void {
+    if (this.squares.length > 1) {
+      this.squares.splice(row, 1);
+    }
+  }
+
 }

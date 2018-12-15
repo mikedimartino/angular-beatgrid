@@ -24,9 +24,6 @@ export class HeaderComponent implements OnInit {
 
   onLoginClicked() {
     const dialogConfig = new MatDialogConfig();
-    dialogConfig.data = {
-      timeSignature: this.beatService.timeSignature
-    };
     dialogConfig.panelClass = 'no-padding';
     this.dialog.open(LoginComponent, dialogConfig);
   }

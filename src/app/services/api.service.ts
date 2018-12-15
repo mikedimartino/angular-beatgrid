@@ -51,7 +51,7 @@ export class ApiService {
     return this.http.delete(`${API_URL}/beats?id=${id}`, options);
   }
 
-  readSounds(folder: string): Observable<any> {
+  readSoundsByFolder(folder: string): Observable<any> {
     return this.http.get(`${API_URL}/sounds?folder=${folder}`);
   }
 
