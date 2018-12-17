@@ -3,6 +3,7 @@
     <button (click)="togglePlayback()">
       {{ playbackService.isPlaying ? 'Pause' : 'Play' }}
     </button>
+    <button (click)="onToggleRecord()">Record</button>
   </div>
   <div class="center-section">
     <button (click)="onPreviousMeasure()"> < </button>

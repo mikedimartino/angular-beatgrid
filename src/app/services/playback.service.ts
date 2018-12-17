@@ -1,16 +1,22 @@
 import { Injectable } from '@angular/core';
-import {GridSound} from '../shared/models/grid-sound.model';
 import {BeatService} from './beat.service';
 import {Measure} from '../shared/models/measure.model';
-import {PlaybackState} from '../shared/models/playback-state.model';
 import {Subject, Subscription} from 'rxjs/index';
 import {SoundService} from './sound.service';
+
+export class PlaybackState {
+  activeColumn: number;
+  currentMeasureIndex: number;
+  currentMeasure: Measure;
+  isPlaying: boolean;
+}
 
 const schedulerFrequencyMs = 50;
 
 @Injectable()
 export class PlaybackService {
-  private audioContext = new AudioContext();
+  audioContext = new AudioContext();
+  mediaDestNode = this.audioContext.createMediaStreamDestination();
   private audioBuffers: { [soundId: number]: AudioBuffer };
   private activeSoundsByMeasureColumn: string[][][]; // [measure][column][row]
   private columnDurationMs: number;
@@ -21,10 +27,13 @@ export class PlaybackService {
   private beatChangedSubscription: Subscription;
 
   currentMeasureChanged = new Subject();
+  totalMeasuresToPlay: number;
+  measuresPlayed: number;
+  shouldKeepTrackOfMeasuresPlayed: boolean;
+  stoppedPlaybackSubject = new Subject();
 
   constructor(private beatService: BeatService,
               private soundService: SoundService) {
-    // this.fetchSounds().then(() => console.log('Finished loading sounds.'));
     this.updateColumnDuration();
     this.state.currentMeasure = this.beatService.measures[0];
     this.state.currentMeasureIndex = 0;
@@ -59,6 +68,7 @@ export class PlaybackService {
     const source = this.audioContext.createBufferSource();
     source.buffer = buf;
     source.connect(this.audioContext.destination);
+    source.connect(this.mediaDestNode); // For recording
     source.start(timeMs / 1000);
   }
 
@@ -85,6 +95,19 @@ export class PlaybackService {
   stopPlayback() {
     this.state.isPlaying = false;
     clearInterval(this.playbackInterval);
+
+    this.totalMeasuresToPlay = 0;
+    this.measuresPlayed = 0;
+    this.shouldKeepTrackOfMeasuresPlayed = false;
+    this.stoppedPlaybackSubject.next();
+  }
+
+  playBeat(times = 1) {
+    this.changeMeasure(0);
+    this.totalMeasuresToPlay = this.beatService.measures.length * times;
+    this.measuresPlayed = 0;
+    this.shouldKeepTrackOfMeasuresPlayed = true;
+    this.startPlayback();
   }
 
   nextMeasure(previous = false) {
@@ -146,6 +169,10 @@ export class PlaybackService {
       if (this.lastColumnPlayed === 0) {
         this.state.currentMeasureIndex = (this.currentMeasureIndex + 1) % this.beatService.measures.length;
         this.state.currentMeasure = this.beatService.measures[this.currentMeasureIndex];
+        if (this.shouldKeepTrackOfMeasuresPlayed && ++this.measuresPlayed === this.totalMeasuresToPlay) {
+          this.stopPlayback();
+          return;
+        }
       }
     } else {
       return;
@@ -166,26 +193,4 @@ export class PlaybackService {
     });
   }
 
-  // private fetchSounds(): Promise<any[] | void> {
-  //   const promises = [];
-  //   this.audioBuffers = [];
-  //   for (let i = 0; i < this.beatService.sounds.length; i++) {
-  //     const sound = this.beatService.getSoundByRow(i);
-  //     promises.push(
-  //       this.fetchSound(sound).then(buf => {
-  //         this.audioBuffers[sound.id] = buf;
-  //       }));
-  //   }
-  //   return Promise.all(promises);
-  // }
-  //
-  // private fetchSound(sound: GridSound): Promise<AudioBuffer> {
-  //   return fetch(sound.filePath)
-  //     .then(resp => resp.arrayBuffer())
-  //     .then(buf => this.audioContext.decodeAudioData(buf))
-  //     .catch(err => {
-  //       console.log('Failed to fetch sound', err);
-  //       return <AudioBuffer>{};
-  //     });
-  // }
 }

@@ -27,6 +27,10 @@ import {GridService} from './services/grid.service';
 import { HeaderComponent } from './components/header/header.component';
 import { PlaybackControlsComponent } from './components/playback-controls/playback-controls.component';
 import { BeatLibraryComponent } from './components/beat-library/beat-library.component';
+import {RecorderService} from './services/recorder.service';
+
+import 'hammerjs';
+import { RecordOptionsComponent } from './components/record-options/record-options.component';
 
 @NgModule({
   declarations: [
@@ -39,7 +43,8 @@ import { BeatLibraryComponent } from './components/beat-library/beat-library.com
     SoundBrowserComponent,
     HeaderComponent,
     PlaybackControlsComponent,
-    BeatLibraryComponent
+    BeatLibraryComponent,
+    RecordOptionsComponent
   ],
   imports: [
     BrowserAnimationsModule,
@@ -63,12 +68,14 @@ import { BeatLibraryComponent } from './components/beat-library/beat-library.com
     BeatService,
     GridService,
     PlaybackService,
+    RecorderService,
     SoundService
   ],
   bootstrap: [AppComponent],
   entryComponents: [
     EditTimeSignatureComponent,
     LoginComponent,
+    RecordOptionsComponent,
     SoundBrowserComponent
   ]
 })

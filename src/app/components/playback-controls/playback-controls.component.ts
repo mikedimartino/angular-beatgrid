@@ -1,19 +1,21 @@
-import { Component, OnInit } from '@angular/core';
+import { Component } from '@angular/core';
 import {PlaybackService} from '../../services/playback.service';
 import {BeatService} from '../../services/beat.service';
+import {RecorderService} from '../../services/recorder.service';
+import {MatDialog, MatDialogConfig} from '@angular/material';
+import {RecordOptions, RecordOptionsComponent} from '../record-options/record-options.component';
 
 @Component({
   selector: 'app-playback-controls',
   templateUrl: './playback-controls.component.html',
   styleUrls: ['./playback-controls.component.scss']
 })
-export class PlaybackControlsComponent implements OnInit {
+export class PlaybackControlsComponent {
 
   constructor(public playbackService: PlaybackService,
-              public beatService: BeatService) { }
-
-  ngOnInit() {
-  }
+              public beatService: BeatService,
+              public recorderService: RecorderService,
+              private dialog: MatDialog) {}
 
   togglePlayback() {
     if (!this.playbackService.isPlaying) {
@@ -46,6 +48,25 @@ export class PlaybackControlsComponent implements OnInit {
 
   onNextMeasure() {
     this.playbackService.nextMeasure();
+  }
+
+  onToggleRecord() {
+    if (this.recorderService.isRecording) {
+      this.recorderService.stopRecording();
+    } else {
+      this.openRecordOptionsDialog();
+    }
+  }
+
+  private openRecordOptionsDialog() {
+    const dialogConfig = new MatDialogConfig();
+    dialogConfig.panelClass = 'no-padding';
+    const dialogRef = this.dialog.open(RecordOptionsComponent, dialogConfig);
+    dialogRef.afterClosed().subscribe((recordOptions: RecordOptions) => {
+      if (recordOptions && recordOptions.name.length && recordOptions.playCount > 0) {
+        this.recorderService.startRecording(recordOptions);
+      }
+    });
   }
 
 }

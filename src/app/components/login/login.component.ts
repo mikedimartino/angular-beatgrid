@@ -8,8 +8,8 @@ import { MatDialogRef } from '@angular/material';
   styleUrls: ['./login.component.scss']
 })
 export class LoginComponent {
-  username = 'mikedimartino';
-  password = 'Sparkalark414!';
+  username = '';
+  password = '';
   loading = false;
   errorMessage = '';
 
@@ -20,7 +20,6 @@ export class LoginComponent {
     this.errorMessage = '';
     this.loading = true;
 
-    console.log(`Username: ${this.username} | Password: ${this.password}`);
     this.userService.logIn(this.username, this.password).subscribe(
       success => {
         this.loading = false;
@@ -31,14 +30,6 @@ export class LoginComponent {
         this.loading = false;
         this.errorMessage = error.message;
       });
-  }
-
-  onKeyDown(event: KeyboardEvent) {
-    console.log(event);
-  }
-
-  onSubmit() {
-    console.log('SUBMIT!!!');
   }
 
 }

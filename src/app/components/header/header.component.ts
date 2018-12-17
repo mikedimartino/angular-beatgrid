@@ -5,7 +5,6 @@ import {PlaybackService} from '../../services/playback.service';
 import {MatDialog, MatDialogConfig} from '@angular/material';
 import {LoginComponent} from '../login/login.component';
 import {EditTimeSignatureComponent} from '../edit-time-signature/edit-time-signature.component';
-import {SoundBrowserComponent} from '../sound-browser/sound-browser.component';
 
 @Component({
   selector: 'app-header',

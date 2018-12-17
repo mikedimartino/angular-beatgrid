@@ -14,15 +14,15 @@ export class EditTimeSignatureComponent {
 
   constructor(
     private dialogRef: MatDialogRef<EditTimeSignatureComponent>,
-    @Inject(MAT_DIALOG_DATA) data) { // What is going on here?
+    @Inject(MAT_DIALOG_DATA) data) {
     this.timeSignature = { ...data.timeSignature };
   }
 
-  cancel() {
+  onCancel() {
     this.dialogRef.close();
   }
 
-  save() {
+  onSave() {
     this.dialogRef.close(this.timeSignature);
   }
 
