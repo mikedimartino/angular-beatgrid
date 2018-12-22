@@ -5,7 +5,9 @@ import { map } from 'rxjs/operators';
 import { S3Object } from '../shared/interfaces';
 import { GridSound } from '../shared/models/grid-sound.model';
 
-@Injectable()
+@Injectable({
+  providedIn: 'root'
+})
 export class SoundService {
   s3Cache = {};
   audioBuffers: { [key: string]: AudioBuffer } = {};

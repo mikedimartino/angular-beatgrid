@@ -8,7 +8,9 @@ function getSquareKey(x: number, y: number): string {
   return `${x}:${y}`;
 }
 
-@Injectable()
+@Injectable({
+  providedIn: 'root'
+})
 export class GridService {
   highlightedSquares: GridSquare[] = [];
   highlightedSquaresDict = {}; // key is "x:y"

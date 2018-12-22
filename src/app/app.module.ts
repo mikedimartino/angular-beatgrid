@@ -3,7 +3,6 @@ import { HttpClientModule } from '@angular/common/http';
 import { NgModule } from '@angular/core';
 
 import { AppComponent } from './app.component';
-import { BeatService } from './services/beat.service';
 import { FormsModule } from '@angular/forms';
 import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
 import {
@@ -14,16 +13,10 @@ import { MatSelectModule } from '@angular/material/select';
 import { MatDialogModule } from '@angular/material/dialog';
 import { EditTimeSignatureComponent } from './components/edit-time-signature/edit-time-signature.component';
 import { NoteTypeDropdownComponent } from './components/note-type-dropdown/note-type-dropdown.component';
-import { ApiService } from './services/api.service';
-import { PlaybackService } from './services/playback.service';
-import { AwsService } from './services/aws.service';
-import { AuthService } from './services/auth.service';
 import { LoginComponent } from './components/login/login.component';
 import { SoundBrowserComponent } from './components/sound-browser/sound-browser.component';
-import { SoundService } from './services/sound.service';
 import { GridComponent } from './components/grid/grid.component';
 import { SelectionRectangleComponent } from './components/selection-rectangle/selection-rectangle.component';
-import {GridService} from './services/grid.service';
 import { HeaderComponent } from './components/header/header.component';
 import { PlaybackControlsComponent } from './components/playback-controls/playback-controls.component';
 import { BeatLibraryComponent } from './components/beat-library/beat-library.component';
@@ -60,16 +53,6 @@ import { RecordOptionsComponent } from './components/record-options/record-optio
     MatSelectModule,
     MatSliderModule,
     MatTooltipModule
-  ],
-  providers: [
-    ApiService,
-    AuthService,
-    AwsService,
-    BeatService,
-    GridService,
-    PlaybackService,
-    RecorderService,
-    SoundService
   ],
   bootstrap: [AppComponent],
   entryComponents: [

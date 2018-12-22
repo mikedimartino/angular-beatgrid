@@ -11,7 +11,9 @@ const poolData = {
 
 const userPool = new CognitoUserPool(poolData);
 
-@Injectable()
+@Injectable({
+  providedIn: 'root'
+})
 export class AuthService {
   cognitoUser: any;
 

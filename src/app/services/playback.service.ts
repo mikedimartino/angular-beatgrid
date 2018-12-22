@@ -1,8 +1,8 @@
 import { Injectable } from '@angular/core';
+import { AudioService } from './audio.service';
 import {BeatService} from './beat.service';
 import {Measure} from '../shared/models/measure.model';
 import {Subject, Subscription} from 'rxjs/index';
-import {SoundService} from './sound.service';
 
 export class PlaybackState {
   activeColumn: number;
@@ -13,7 +13,9 @@ export class PlaybackState {
 
 const schedulerFrequencyMs = 50;
 
-@Injectable()
+@Injectable({
+  providedIn: 'root'
+})
 export class PlaybackService {
   audioContext = new AudioContext();
   mediaDestNode = this.audioContext.createMediaStreamDestination();
@@ -32,8 +34,8 @@ export class PlaybackService {
   shouldKeepTrackOfMeasuresPlayed: boolean;
   stoppedPlaybackSubject = new Subject();
 
-  constructor(private beatService: BeatService,
-              private soundService: SoundService) {
+  constructor(private audioService: AudioService,
+              private beatService: BeatService) {
     this.updateColumnDuration();
     this.state.currentMeasure = this.beatService.measures[0];
     this.state.currentMeasureIndex = 0;
@@ -64,12 +66,7 @@ export class PlaybackService {
   }
 
   playSound(soundKey: string, timeMs = 0) {
-    const buf = this.soundService.audioBuffers[soundKey];
-    const source = this.audioContext.createBufferSource();
-    source.buffer = buf;
-    source.connect(this.audioContext.destination);
-    source.connect(this.mediaDestNode); // For recording
-    source.start(timeMs / 1000);
+    this.audioService.playSound(soundKey, timeMs);
   }
 
   setColumnSoundActive(column: number, row: number, active: boolean, measureIndex = this.currentMeasureIndex) {

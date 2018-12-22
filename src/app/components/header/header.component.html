@@ -6,7 +6,7 @@
     <div class="login-section">
       <a *ngIf="!authService.isLoggedIn()"
          class="login-out"
-         click)="onLoginClicked()">Log In</a>
+         (click)="onLoginClicked()">Log In</a>
       <span *ngIf="authService.isLoggedIn()">
       Logged in as <span class="username">{{ authService.username }}</span>
       &nbsp;|&nbsp;

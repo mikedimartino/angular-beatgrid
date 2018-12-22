@@ -8,7 +8,9 @@ import { AuthService } from './auth.service';
 
 const API_URL = 'https://xudngyebm8.execute-api.us-west-2.amazonaws.com/dev';
 
-@Injectable()
+@Injectable({
+  providedIn: 'root'
+})
 export class ApiService {
 
   constructor(private http: HttpClient,

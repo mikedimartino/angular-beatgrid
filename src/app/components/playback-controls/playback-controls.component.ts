@@ -1,9 +1,9 @@
 import { Component } from '@angular/core';
 import {PlaybackService} from '../../services/playback.service';
 import {BeatService} from '../../services/beat.service';
-import {RecorderService} from '../../services/recorder.service';
 import {MatDialog, MatDialogConfig} from '@angular/material';
 import {RecordOptions, RecordOptionsComponent} from '../record-options/record-options.component';
+import { RecorderService } from '../../services/recorder.service';
 
 @Component({
   selector: 'app-playback-controls',
@@ -52,7 +52,7 @@ export class PlaybackControlsComponent {
 
   onToggleRecord() {
     if (this.recorderService.isRecording) {
-      this.recorderService.stopRecording();
+      this.recorderService.stop();
     } else {
       this.openRecordOptionsDialog();
     }
@@ -64,7 +64,7 @@ export class PlaybackControlsComponent {
     const dialogRef = this.dialog.open(RecordOptionsComponent, dialogConfig);
     dialogRef.afterClosed().subscribe((recordOptions: RecordOptions) => {
       if (recordOptions && recordOptions.name.length && recordOptions.playCount > 0) {
-        this.recorderService.startRecording(recordOptions);
+        this.recorderService.start(recordOptions);
       }
     });
   }

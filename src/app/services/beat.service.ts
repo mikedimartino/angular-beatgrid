@@ -31,7 +31,9 @@ const defaultSounds: GridSound[] = [
   new GridSound('Drum Kits/Kurzweil Kit 01/CYCdh_Kurz01-Kick01.mp3', 'Kick 1'),
 ];
 
-@Injectable()
+@Injectable({
+  providedIn: 'root'
+})
 export class BeatService {
   beat: Beat;
   beats: Beat[] = [];
