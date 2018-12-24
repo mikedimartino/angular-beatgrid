@@ -23,7 +23,6 @@
     "@angular/platform-browser": "6.1.6",
     "@angular/platform-browser-dynamic": "6.1.6",
     "@angular/router": "6.1.6",
-    "@types/webaudioapi": "0.0.27",
     "amazon-cognito-identity-js": "^3.0.3",
     "aws-sdk": "^2.354.0",
     "bootstrap": "^4.1.3",

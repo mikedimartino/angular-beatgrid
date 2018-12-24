@@ -118,6 +118,10 @@ export class GridComponent implements OnInit, AfterViewInit, OnDestroy, AfterVie
     this.beatService.deleteRow(index);
   }
 
+  onRowMoved(event: any) {
+    console.log('row moved: ', event);
+  }
+
   onSelectionRectangleChanged(state: SelectionRectangleState) {
     if (state.active !== this.selectionRectangleActive) {
       this.selectionRectangleActive = state.active;
