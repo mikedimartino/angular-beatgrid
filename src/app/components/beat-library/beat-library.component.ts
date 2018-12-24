@@ -25,7 +25,6 @@ export class BeatLibraryComponent implements OnInit {
   }
 
   saveBeat() {
-    this.beatService.beat.name = 'Beat ' + Math.floor(Math.random() * 1000);
     this.beatService.save();
   }
 

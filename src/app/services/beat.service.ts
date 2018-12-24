@@ -1,4 +1,7 @@
 import { Injectable } from '@angular/core';
+
+import { MatDialog, MatDialogConfig } from '@angular/material';
+import { BeatDetailsComponent } from '../components/beat-details/beat-details.component';
 import { TimeSignature } from '../shared/models/time-signature.model';
 import { Measure } from '../shared/models/measure.model';
 import { Beat } from '../shared/models/beat.model';
@@ -42,6 +45,7 @@ export class BeatService {
   loading = false;
 
   constructor(private apiService: ApiService,
+              private dialog: MatDialog,
               private soundService: SoundService) {
     this.loading = true;
     this.new();
@@ -181,9 +185,23 @@ export class BeatService {
   save() {
     if (this.isNew) {
       this.isNew = false;
-      this.apiService.createBeat(this.beat).subscribe(response => {
-        this.beat.id = response.id;
-        this.beats.push(this.beat);
+
+      const dialogConfig = new MatDialogConfig();
+      dialogConfig.panelClass = 'no-padding';
+      const dialogRef = this.dialog.open(BeatDetailsComponent, dialogConfig);
+      dialogRef.afterClosed().subscribe(result => {
+        if (!result) {
+          return;
+        }
+        this.beat.name = result;
+        this.apiService.createBeat(this.beat).subscribe(response => {
+          this.beat.id = response.id;
+          this.beats.push(this.beat);
+        });
+      });
+    } else {
+      this.apiService.updateBeat(this.beat).subscribe(response => {
+        console.log('updateBeat response: ', response);
       });
     }
   }

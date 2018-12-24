@@ -29,6 +29,9 @@ export class ApiService {
             beats.push(beat);
           } catch (e) {
             console.error('Failed to parse beat: ', row);
+            this.deleteBeat(row.id).subscribe(() => {
+              console.log('Deleted invalid beat ' + row.id);
+            });
           }
         });
         return beats;
@@ -45,6 +48,18 @@ export class ApiService {
     };
 
     return this.http.post<Beat>(API_URL + '/beats', body, options);
+  }
+
+  updateBeat(beat: Beat): Observable<Beat> {
+    const headers = new HttpHeaders().set('Authorization', this.authService.getToken());
+    const options = { headers: headers };
+    const body = {
+      id: beat.id,
+      name: beat.name,
+      json: JSON.stringify(Beat.compressForStorage(beat))
+    };
+
+    return this.http.put<Beat>(API_URL + '/beats', body, options);
   }
 
   deleteBeat(id: number): Observable<any> { // What is the response type actually?
