@@ -112,4 +112,22 @@ export class Measure {
     }
   }
 
+  moveRow(prevIndex: number, newIndex: number): void {
+    const isMovingDown = prevIndex < newIndex;
+    const lowIndex = Math.min(prevIndex, newIndex);
+    const highIndex = Math.max(prevIndex, newIndex);
+    const moveRow = this.squares[prevIndex];
+
+    for (let i = lowIndex; i <= highIndex; i++) {
+      const shiftRow = this.squares[i];
+      shiftRow.forEach(square => {
+        square.row += isMovingDown ? 1 : -1;
+      });
+    }
+    moveRow.forEach(square => square.row = newIndex);
+
+    this.squares.splice(prevIndex, 1);
+    this.squares.splice(newIndex, 0, moveRow);
+  }
+
 }

@@ -1,3 +1,4 @@
+import { DragDropModule } from '@angular/cdk/drag-drop';
 import { BrowserModule } from '@angular/platform-browser';
 import { HttpClientModule } from '@angular/common/http';
 import { NgModule } from '@angular/core';
@@ -43,6 +44,7 @@ import { BeatDetailsComponent } from './components/beat-details/beat-details.com
   imports: [
     BrowserAnimationsModule,
     BrowserModule,
+    DragDropModule,
     FormsModule,
     HttpClientModule,
     MatCardModule,

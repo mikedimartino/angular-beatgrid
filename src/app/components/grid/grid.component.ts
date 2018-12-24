@@ -1,3 +1,4 @@
+import { CdkDragSortEvent } from '@angular/cdk/drag-drop';
 import { AfterViewChecked, AfterViewInit, Component, ElementRef, OnDestroy, OnInit, Renderer2, ViewChild } from '@angular/core';
 import {BeatService} from '../../services/beat.service';
 import {Subscription} from 'rxjs/index';
@@ -118,8 +119,8 @@ export class GridComponent implements OnInit, AfterViewInit, OnDestroy, AfterVie
     this.beatService.deleteRow(index);
   }
 
-  onRowMoved(event: any) {
-    console.log('row moved: ', event);
+  onRowMoved(event: CdkDragSortEvent) {
+    this.beatService.moveRow(event.previousIndex, event.currentIndex);
   }
 
   onSelectionRectangleChanged(state: SelectionRectangleState) {

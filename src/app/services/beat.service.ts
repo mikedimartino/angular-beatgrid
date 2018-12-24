@@ -150,6 +150,13 @@ export class BeatService {
     this.sounds.splice(index + 1, 0, this.sounds[index]);
   }
 
+  moveRow(prevIndex: number, newIndex: number) {
+    const sound = this.beat.sounds[prevIndex];
+    this.beat.sounds.splice(prevIndex, 1);
+    this.beat.sounds.splice(newIndex, 0, sound);
+    this.measures.forEach(measure => measure.moveRow(prevIndex, newIndex));
+  }
+
   deleteRow(index: number) {
     if (this.rows > 1) {
       this.measures.forEach(measure => measure.deleteRow(index));
@@ -201,7 +208,7 @@ export class BeatService {
       });
     } else {
       this.apiService.updateBeat(this.beat).subscribe(response => {
-        console.log('updateBeat response: ', response);
+        console.log('Updated beat');
       });
     }
   }
