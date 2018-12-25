@@ -1,6 +1,6 @@
 import { Injectable } from '@angular/core';
 import { AudioService } from './audio.service';
-import {BeatService} from './beat.service';
+import { BeatChangedEvent, BeatService } from './beat.service';
 import {Measure} from '../shared/models/measure.model';
 import {Subject, Subscription} from 'rxjs/index';
 
@@ -18,8 +18,6 @@ const schedulerFrequencyMs = 50;
 })
 export class PlaybackService {
   audioContext = new AudioContext();
-  mediaDestNode = this.audioContext.createMediaStreamDestination();
-  private audioBuffers: { [soundId: number]: AudioBuffer };
   private activeSoundsByMeasureColumn: string[][][]; // [measure][column][row]
   private columnDurationMs: number;
   private playbackInterval: any;
@@ -42,11 +40,16 @@ export class PlaybackService {
 
     this.initActiveSounds();
 
-    this.beatChangedSubscription = this.beatService.getBeatChangedObservable().subscribe(() => {
-      this.updateActiveSounds();
-      this.updateColumnDuration();
-      this.state.currentMeasure = this.beatService.measures[this.currentMeasureIndex];
-    });
+    this.beatChangedSubscription = this.beatService.getBeatChangedObservable()
+      .subscribe((eventArgs: BeatChangedEvent) => {
+        this.updateActiveSounds();
+        this.updateColumnDuration();
+        if (eventArgs && eventArgs.shouldStopPlayback) {
+          this.stopPlayback();
+          this.changeMeasure(0);
+        }
+        this.state.currentMeasure = this.beatService.measures[this.currentMeasureIndex];
+      });
   }
 
   get activeColumn(): number {

@@ -6,7 +6,7 @@ import { SoundService } from './sound.service';
 })
 export class AudioService {
   audioContext = new AudioContext();
-  streamDestination = this.audioContext.createMediaStreamDestination();
+  streamDestination = (<any>this.audioContext).createMediaStreamDestination();
   streamSource = this.audioContext.createMediaStreamSource(this.streamDestination.stream);
 
   constructor(private soundService: SoundService) {}

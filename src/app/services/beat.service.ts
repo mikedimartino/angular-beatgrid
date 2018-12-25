@@ -23,6 +23,10 @@ import {SoundService} from './sound.service';
 //   new GridSound(8, 'kick', soundPathPrefix + 'CYCdh_Kurz01-Kick01.wav')
 // ];
 
+export interface BeatChangedEvent {
+  shouldStopPlayback: boolean;
+}
+
 const defaultSounds: GridSound[] = [
   new GridSound('Drum Kits/Kurzweil Kit 01/CYCdh_Kurz01-Crash01.mp3', 'Crash 1'),
   new GridSound('Drum Kits/Kurzweil Kit 01/CYCdh_Kurz01-Ride01.mp3', 'Ride 1'),
@@ -40,7 +44,7 @@ const defaultSounds: GridSound[] = [
 export class BeatService {
   beat: Beat;
   beats: Beat[] = [];
-  beatChangedSubject = new Subject();
+  beatChangedSubject = new Subject<BeatChangedEvent>();
   isNew = false;
   loading = false;
 
@@ -102,7 +106,7 @@ export class BeatService {
     if (selectedBeat) {
       this.beat = selectedBeat;
       this.isNew = false;
-      this.onBeatChanged();
+      this.onBeatChanged({ shouldStopPlayback: true });
     }
   }
 
@@ -236,9 +240,8 @@ export class BeatService {
     });
   }
 
-  // TODO: Update name of this and related properties, since this is only for layout changes (and not tempo).
-  onBeatChanged(): void {
-    this.beatChangedSubject.next();
+  onBeatChanged(eventArgs?: BeatChangedEvent): void {
+    this.beatChangedSubject.next(eventArgs);
   }
 
   private generateTestBeat(): Beat {
