@@ -58,7 +58,7 @@ export class BeatService {
       if (beats && beats.length) {
         this.selectBeat(beats[0].id);
       }
-      this.soundService.downloadSounds(this.beat.sounds);
+      this.soundService.downloadSounds(this.sounds);
       this.onBeatChanged();
     });
   }
@@ -138,11 +138,11 @@ export class BeatService {
   }
 
   getSoundByRow(row: number): GridSound {
-    return this.beat.sounds[row];
+    return this.sounds[row];
   }
 
   changeSound(row: number, newSoundKey: string) {
-    this.beat.sounds[row] = new GridSound(newSoundKey, newSoundKey);
+    this.sounds[row] = new GridSound(newSoundKey, newSoundKey);
   }
 
   getBeatChangedObservable(): Observable<any> {
@@ -155,9 +155,9 @@ export class BeatService {
   }
 
   moveRow(prevIndex: number, newIndex: number) {
-    const sound = this.beat.sounds[prevIndex];
-    this.beat.sounds.splice(prevIndex, 1);
-    this.beat.sounds.splice(newIndex, 0, sound);
+    const sound = this.sounds[prevIndex];
+    this.sounds.splice(prevIndex, 1);
+    this.sounds.splice(newIndex, 0, sound);
     this.measures.forEach(measure => measure.moveRow(prevIndex, newIndex));
   }
 
@@ -169,9 +169,15 @@ export class BeatService {
     }
   }
 
+  cloneMeasure(index: number) {
+    const clone = JSON.parse(JSON.stringify(this.measures[index]));
+    this.measures.push(clone);
+    this.onBeatChanged();
+  }
+
   addMeasure() {
-    const measure = new Measure(this.beat.sounds.length, this.columnsPerMeasure);
-    this.beat.measures.push(measure);
+    const measure = new Measure(this.sounds.length, this.columnsPerMeasure);
+    this.measures.push(measure);
     this.onBeatChanged();
   }
 
@@ -220,7 +226,7 @@ export class BeatService {
   new() {
     this.isNew = true;
     this.beat = this.generateNewBeat();
-    this.onBeatChanged();
+    this.onBeatChanged({ shouldStopPlayback: true });
   }
 
   delete(id: number) {

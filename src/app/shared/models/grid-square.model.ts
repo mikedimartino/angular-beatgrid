@@ -8,8 +8,4 @@ export class GridSquare {
     this.column = column;
     this.on = on;
   }
-
-  toggle() {
-    this.on = !this.on;
-  }
 }

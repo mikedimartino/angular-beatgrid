@@ -107,7 +107,7 @@ export class GridComponent implements OnInit, AfterViewInit, OnDestroy, AfterVie
     if (event.button !== 0) {
       return;
     }
-    square.toggle();
+    square.on = !square.on;
     this.playbackService.setColumnSoundActive(square.column, square.row, square.on);
   }
 

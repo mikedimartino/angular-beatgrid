@@ -25,6 +25,12 @@ export class PlaybackControlsComponent {
     }
   }
 
+  onCloneMeasure() {
+    const index = this.playbackService.currentMeasureIndex;
+    this.beatService.cloneMeasure(index);
+    this.playbackService.changeMeasure(this.beatService.measures.length - 1);
+  }
+
   onAddMeasure() {
     this.beatService.addMeasure();
     this.playbackService.changeMeasure(this.beatService.measures.length - 1);
