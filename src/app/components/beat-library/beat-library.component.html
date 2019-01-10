@@ -9,6 +9,6 @@
   <li *ngFor="let beat of beatService.beats">
     <a (click)="onBeatClicked(beat.id)">{{ beat.name }}</a>
     &nbsp;
-    <button (click)="onDeleteBeatClicked(beat.id)">Delete</button>
+    <button *ngIf="authService.isLoggedIn()" (click)="onDeleteBeatClicked(beat.id)">Delete</button>
   </li>
 </ul>

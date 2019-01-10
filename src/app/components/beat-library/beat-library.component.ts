@@ -2,6 +2,7 @@ import { Component, OnInit } from '@angular/core';
 import {BeatService} from '../../services/beat.service';
 import {SoundBrowserComponent} from '../sound-browser/sound-browser.component';
 import {MatDialog, MatDialogConfig} from '@angular/material';
+import {AuthService} from '../../services/auth.service';
 
 @Component({
   selector: 'app-beat-library',
@@ -10,7 +11,8 @@ import {MatDialog, MatDialogConfig} from '@angular/material';
 })
 export class BeatLibraryComponent implements OnInit {
 
-  constructor(public beatService: BeatService,
+  constructor(public authService: AuthService,
+              public beatService: BeatService,
               private dialog: MatDialog) { }
 
   ngOnInit() {

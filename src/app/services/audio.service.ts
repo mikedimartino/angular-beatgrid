@@ -6,10 +6,9 @@ import { SoundService } from './sound.service';
 })
 export class AudioService {
   audioContext = new AudioContext();
+  audioBuffers: { [key: string]: AudioBuffer } = {};
   streamDestination = (<any>this.audioContext).createMediaStreamDestination();
   streamSource = this.audioContext.createMediaStreamSource(this.streamDestination.stream);
-
-  constructor(private soundService: SoundService) {}
 
   // https://developer.mozilla.org/en-US/docs/Web/API/AudioBufferSourceNode :
   // An AudioBufferSourceNode can only be played once;
@@ -18,7 +17,7 @@ export class AudioService {
 
   playSound(soundKey: string, timeMs = 0) {
     const source = this.audioContext.createBufferSource();
-    source.buffer = this.soundService.audioBuffers[soundKey];
+    source.buffer = this.audioBuffers[soundKey];
     source.connect(this.audioContext.destination);
     source.connect(this.streamDestination); // For recording
     source.start(timeMs / 1000);

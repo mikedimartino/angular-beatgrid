@@ -4,16 +4,25 @@ import { forkJoin, Observable, of } from 'rxjs';
 import { map } from 'rxjs/operators';
 import { S3Object } from '../shared/interfaces';
 import { GridSound } from '../shared/models/grid-sound.model';
+import {AudioService} from './audio.service';
 
 @Injectable({
   providedIn: 'root'
 })
 export class SoundService {
   s3Cache = {};
-  audioBuffers: { [key: string]: AudioBuffer } = {};
-  audioContext = new AudioContext();
 
-  constructor(private apiService: ApiService) {}
+  constructor(private audioService: AudioService,
+              private apiService: ApiService) {
+  }
+
+  get audioContext(): AudioContext {
+    return this.audioService.audioContext;
+  }
+
+  get audioBuffers() {
+    return this.audioService.audioBuffers;
+  }
 
   getSoundsByFolder(folder: string = ''): Observable<S3Object[]> {
     if (this.s3Cache[folder]) {
@@ -46,18 +55,6 @@ export class SoundService {
       }
     });
     return forkJoin(observables);
-  }
-
-  playSound(key: string) {
-    if (!this.audioBuffers[key]) {
-      console.error(`Sound '${key}' does not exist or has not yet been downloaded.`);
-    } else {
-        const buf = this.audioBuffers[key];
-        const source = this.audioContext.createBufferSource();
-        source.buffer = buf;
-        source.connect(this.audioContext.destination);
-        source.start(0);
-    }
   }
 
 }

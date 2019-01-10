@@ -4,6 +4,7 @@ import { S3Object } from '../../shared/interfaces';
 import {MAT_DIALOG_DATA, MatDialogRef} from '@angular/material';
 import {GridSound} from '../../shared/models/grid-sound.model';
 import {BeatService} from '../../services/beat.service';
+import {AudioService} from '../../services/audio.service';
 
 const SOUND_LIBRARY_ROOT = 'Drum Kits/';
 
@@ -21,6 +22,7 @@ export class SoundBrowserComponent implements OnInit {
   viewingSoundDetails = false;
 
   constructor(@Inject(MAT_DIALOG_DATA) data,
+              private audioService: AudioService,
               private dialogRef: MatDialogRef<SoundBrowserComponent>,
               private beatService: BeatService,
               private soundService: SoundService) {
@@ -56,7 +58,7 @@ export class SoundBrowserComponent implements OnInit {
   }
 
   playSound(file: S3Object) {
-    this.soundService.playSound(file.key);
+    this.audioService.playSound(file.key);
   }
 
   // TODO: Improve this / clean up

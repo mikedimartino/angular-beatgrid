@@ -17,7 +17,6 @@ const schedulerFrequencyMs = 50;
   providedIn: 'root'
 })
 export class PlaybackService {
-  audioContext = new AudioContext();
   private activeSoundsByMeasureColumn: string[][][]; // [measure][column][row]
   private columnDurationMs: number;
   private playbackInterval: any;
@@ -50,6 +49,10 @@ export class PlaybackService {
         }
         this.state.currentMeasure = this.beatService.measures[this.currentMeasureIndex];
       });
+  }
+
+  get audioContext(): AudioContext {
+    return this.audioService.audioContext;
   }
 
   get activeColumn(): number {
