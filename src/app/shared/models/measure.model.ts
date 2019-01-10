@@ -3,13 +3,6 @@ import { GridSquare } from './grid-square.model';
 export class Measure {
   squares: GridSquare[][];
 
-  get numColumns() {
-    if (!this.squares || !this.squares.length) {
-      return 0;
-    }
-    return this.squares[0].length;
-  }
-
   constructor(rows = 0, columns = 0) {
     this.squares = [];
     for (let r = 0; r < rows; r++) {
@@ -18,6 +11,13 @@ export class Measure {
         this.squares[r][c] = new GridSquare(r, c);
       }
     }
+  }
+
+  static getNumColumns(measure: Measure) {
+    if (!measure.squares || !measure.squares.length) {
+      return 0;
+    }
+    return measure.squares[0].length;
   }
 
   static fromSquares(squares: GridSquare[][]): Measure {
@@ -47,14 +47,15 @@ export class Measure {
   }
 
   // TODO: Maybe add check to see if any notes would be lost
-  collapseColumns(newColumnCount: number) {
-    if (newColumnCount > this.numColumns || this.numColumns % newColumnCount !== 0) {
+  static collapseColumns(measure: Measure, newColumnCount: number) {
+    const numColumns = Measure.getNumColumns(measure);
+    if (newColumnCount > numColumns || numColumns % newColumnCount !== 0) {
       console.error(`Could not collapse columns. Invalid new column count of '${newColumnCount}'.`);
       return;
     }
 
-    const factor = this.numColumns / newColumnCount;
-    this.squares = this.squares.map(row => {
+    const factor = numColumns / newColumnCount;
+    measure.squares = measure.squares.map(row => {
       const newRow = [];
       let columnIndex = 0;
       row.forEach(square => {
@@ -66,14 +67,15 @@ export class Measure {
     });
   }
 
-  expandColumns(newColumnCount: number) {
-    if (newColumnCount < this.numColumns || newColumnCount % this.numColumns !== 0) {
+  static expandColumns(measure: Measure, newColumnCount: number) {
+    const numColumns = Measure.getNumColumns(measure);
+    if (newColumnCount < numColumns || newColumnCount % numColumns !== 0) {
       console.error(`Could not expand columns. Invalid new column count of '${newColumnCount}'.`);
       return;
     }
 
-    const factor = newColumnCount / this.numColumns;
-    this.squares = this.squares.map(row => {
+    const factor = newColumnCount / numColumns;
+    measure.squares = measure.squares.map(row => {
       const newRow = [];
       let columnIndex = 0;
       row.forEach(square => {
@@ -86,48 +88,49 @@ export class Measure {
     });
   }
 
-  addRow(row: number): void {
+  static addRow(measure: Measure, row: number): void {
+    const numColumns = Measure.getNumColumns(measure);
     const newRow: GridSquare[] = [];
-    for (let column = 0; column < this.numColumns; column++) {
+    for (let column = 0; column < numColumns; column++) {
       newRow.push(new GridSquare(row, column));
     }
-    this.squares.splice(row, 0, newRow);
+    measure.squares.splice(row, 0, newRow);
 
     // Update row for squares in all rows after added row
-    for (let i = row + 1; i < this.squares.length; i++) {
-      this.squares[i].forEach(square => square.row++);
+    for (let i = row + 1; i < measure.squares.length; i++) {
+      measure.squares[i].forEach(square => square.row++);
     }
   }
 
-  deleteRow(row: number): void {
-    if (this.squares.length > 1) {
-      this.squares.splice(row, 1);
+  static deleteRow(measure: Measure, row: number): void {
+    if (measure.squares.length > 1) {
+      measure.squares.splice(row, 1);
 
       // Update row for squares in all rows after deleted row
-      for (let i = row; i < this.squares.length; i++) {
-        this.squares[i].forEach(square => {
+      for (let i = row; i < measure.squares.length; i++) {
+        measure.squares[i].forEach(square => {
           square.row--;
         });
       }
     }
   }
 
-  moveRow(prevIndex: number, newIndex: number): void {
+  static moveRow(measure: Measure, prevIndex: number, newIndex: number): void {
     const isMovingDown = prevIndex < newIndex;
     const lowIndex = Math.min(prevIndex, newIndex);
     const highIndex = Math.max(prevIndex, newIndex);
-    const moveRow = this.squares[prevIndex];
+    const moveRow = measure.squares[prevIndex];
 
     for (let i = lowIndex; i <= highIndex; i++) {
-      const shiftRow = this.squares[i];
+      const shiftRow = measure.squares[i];
       shiftRow.forEach(square => {
         square.row += isMovingDown ? 1 : -1;
       });
     }
     moveRow.forEach(square => square.row = newIndex);
 
-    this.squares.splice(prevIndex, 1);
-    this.squares.splice(newIndex, 0, moveRow);
+    measure.squares.splice(prevIndex, 1);
+    measure.squares.splice(newIndex, 0, moveRow);
   }
 
 }

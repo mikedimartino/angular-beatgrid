@@ -10,7 +10,7 @@ import { Subscription } from 'rxjs/index';
   providedIn: 'root'
 })
 export class RecorderService {
-  recorder: Recorder;
+  recorder: any;
   isRecording: boolean;
   currentOptions: RecordOptions;
   stoppedPlaybackSubscription: Subscription;

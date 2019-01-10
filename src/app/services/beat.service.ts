@@ -87,7 +87,7 @@ export class BeatService {
     if (!this.beat.measures || !this.beat.measures.length) {
       return 0;
     }
-    return this.beat.measures[0].numColumns;
+    return Measure.getNumColumns(this.beat.measures[0]);
   }
 
   get rows(): number {
@@ -113,9 +113,9 @@ export class BeatService {
   setDivisionLevel(value: number): void {
     const newColumnCount = this.calculateColumnsPerMeasure(this.beat.timeSignature, value);
     if (value < this.divisionLevel) {
-      this.beat.measures.forEach(measure => measure.collapseColumns(newColumnCount));
+      this.beat.measures.forEach(measure => Measure.collapseColumns(measure, newColumnCount));
     } else if (value > this.divisionLevel) {
-      this.beat.measures.forEach(measure => measure.expandColumns(newColumnCount));
+      this.beat.measures.forEach(measure => Measure.expandColumns(measure, newColumnCount));
     } else {
       return;
     }
@@ -150,7 +150,7 @@ export class BeatService {
   }
 
   addRow(index: number) {
-    this.measures.forEach(measure => measure.addRow(index + 1));
+    this.measures.forEach(measure => Measure.addRow(measure, index + 1));
     this.sounds.splice(index + 1, 0, this.sounds[index]);
   }
 
@@ -158,12 +158,12 @@ export class BeatService {
     const sound = this.sounds[prevIndex];
     this.sounds.splice(prevIndex, 1);
     this.sounds.splice(newIndex, 0, sound);
-    this.measures.forEach(measure => measure.moveRow(prevIndex, newIndex));
+    this.measures.forEach(measure => Measure.moveRow(measure, prevIndex, newIndex));
   }
 
   deleteRow(index: number) {
     if (this.rows > 1) {
-      this.measures.forEach(measure => measure.deleteRow(index));
+      this.measures.forEach(measure => Measure.deleteRow(measure, index));
       this.sounds.splice(index, 1);
       this.onBeatChanged();
     }
