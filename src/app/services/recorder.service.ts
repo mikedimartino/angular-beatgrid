@@ -1,4 +1,5 @@
-import * as Recorder from '../../assets/js/recorder';
+require('../../assets/js/recorder');
+declare var Recorder: any;
 
 import { Injectable } from '@angular/core';
 import { AudioService } from './audio.service';
