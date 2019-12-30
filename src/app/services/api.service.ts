@@ -42,32 +42,26 @@ export class ApiService {
   }
 
   createBeat(beat: Beat): Observable<Beat> {
-    const headers = new HttpHeaders().set('Authorization', this.store.getToken());
-    const options = { headers: headers };
     const body = {
       name: beat.name,
       json: JSON.stringify(Beat.compressForStorage(beat))
     };
 
-    return this.http.post<Beat>(OLD_API_URL + '/beats', body, options);
+    return this.http.post<Beat>(OLD_API_URL + '/beats', body);
   }
 
   updateBeat(beat: Beat): Observable<Beat> {
-    const headers = new HttpHeaders().set('Authorization', this.store.getToken());
-    const options = { headers: headers };
     const body = {
       id: beat.id,
       name: beat.name,
       json: JSON.stringify(Beat.compressForStorage(beat))
     };
 
-    return this.http.put<Beat>(OLD_API_URL + '/beats', body, options);
+    return this.http.put<Beat>(OLD_API_URL + '/beats', body);
   }
 
   deleteBeat(id: number): Observable<any> { // What is the response type actually?
-    const headers = new HttpHeaders().set('Authorization', this.store.getToken());
-    const options = { headers: headers };
-    return this.http.delete(`${OLD_API_URL}/beats?id=${id}`, options);
+    return this.http.delete(`${OLD_API_URL}/beats?id=${id}`);
   }
 
   readSoundsByFolder(folder: string): Observable<any> {

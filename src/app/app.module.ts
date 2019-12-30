@@ -1,6 +1,6 @@
 import { DragDropModule } from '@angular/cdk/drag-drop';
 import { BrowserModule } from '@angular/platform-browser';
-import { HttpClientModule } from '@angular/common/http';
+import { HttpClientModule, HTTP_INTERCEPTORS } from '@angular/common/http';
 import { NgModule } from '@angular/core';
 import { FormsModule, ReactiveFormsModule } from '@angular/forms';
 import {
@@ -25,6 +25,7 @@ import { BeatLibraryComponent } from './components/beat-library/beat-library.com
 import 'hammerjs';
 import { RecordOptionsComponent } from './components/record-options/record-options.component';
 import { BeatDetailsComponent } from './components/beat-details/beat-details.component';
+import { TokenInterceptor } from './interceptors/token.interceptor';
 
 @NgModule({
   declarations: [
@@ -65,6 +66,11 @@ import { BeatDetailsComponent } from './components/beat-details/beat-details.com
     RecordOptionsComponent,
     BeatDetailsComponent,
     SoundBrowserComponent
-  ]
+  ],
+  providers: [{
+    provide: HTTP_INTERCEPTORS,
+    useClass: TokenInterceptor,
+    multi: true
+  }]
 })
 export class AppModule { }
