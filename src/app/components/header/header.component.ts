@@ -5,6 +5,7 @@ import {PlaybackService} from '../../services/playback.service';
 import {MatDialog, MatDialogConfig} from '@angular/material';
 import {LoginComponent} from '../login/login.component';
 import {EditTimeSignatureComponent} from '../edit-time-signature/edit-time-signature.component';
+import { StoreService } from '../../services/store.service';
 
 @Component({
   selector: 'app-header',
@@ -12,11 +13,11 @@ import {EditTimeSignatureComponent} from '../edit-time-signature/edit-time-signa
   styleUrls: ['./header.component.scss']
 })
 export class HeaderComponent implements OnInit {
-
   constructor(public authService: AuthService,
               public beatService: BeatService,
               public playbackService: PlaybackService,
-              private dialog: MatDialog) { }
+              private dialog: MatDialog,
+              private store: StoreService) { }
 
   ngOnInit() {
   }

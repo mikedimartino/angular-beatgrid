@@ -8,7 +8,7 @@
          class="login-out"
          (click)="onLoginClicked()">Log In</a>
       <span *ngIf="authService.isLoggedIn()">
-      Logged in as <span class="username">{{ authService.username }}</span>
+      Logged in as <span class="username">{{ store.getUsername() }}</span>
       &nbsp;|&nbsp;
       <a class="login-out"
          (click)="authService.logOut()">Log Out</a>

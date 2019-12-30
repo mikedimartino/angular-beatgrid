@@ -1,92 +1,49 @@
 import { Injectable } from '@angular/core';
-import { AuthenticationDetails, CognitoUser, CognitoUserPool } from 'amazon-cognito-identity-js';
-import { Observable } from 'rxjs/index';
+import { Observable, of } from 'rxjs/index';
+import { ApiService } from './api.service';
+import { tap } from 'rxjs/internal/operators/tap';
+import { LoginResponse } from '../shared/api-types';
+import { StoreService } from './store.service';
 
-// https://docs.aws.amazon.com/cognito/latest/developerguide/using-amazon-cognito-user-identity-pools-javascript-examples.html
+import * as moment from 'moment';
 
-const poolData = {
-  UserPoolId: 'us-west-2_CPEOlgCr7', // Your user pool id here
-  ClientId: '38qdjeagcn93uqgbnh18qoj4dg' // Your client id here
-};
-
-const userPool = new CognitoUserPool(poolData);
+const EXPIRES_AT_KEY = 'expires_at';
+const TOKEN_KEY = 'token';
+const USERNAME_KEY = 'username';
 
 @Injectable({
   providedIn: 'root'
 })
 export class AuthService {
-  cognitoUser: any;
-
-  get username() {
-    return this.cognitoUser ? this.cognitoUser.getUsername() : '';
+  constructor(private api: ApiService,
+              private store: StoreService) {
   }
 
-  constructor() {
-    this.cognitoUser = userPool.getCurrentUser();
-    this.updateSession();
+  // https://blog.angular-university.io/angular-jwt-authentication/
+  logIn(username: string, password: string): Observable<LoginResponse> { // TODO: Rename to login
+    return this.api.login(username, password).pipe(
+      tap(result => {
+        this.setSession(result);
+      })
+    );
   }
 
-  // https://github.com/kousekt/angularcognitotest/blob/master/src/app/shared/authorization.service.ts
-
-  logIn(username: string, password: string) {
-    const authenticationData = {
-      Username : username,
-      Password : password,
-    };
-    const authenticationDetails = new AuthenticationDetails(authenticationData);
-
-    const userData = {
-      Username : username,
-      Pool : userPool
-    };
-    this.cognitoUser = new CognitoUser(userData);
-
-    return Observable.create(observer => {
-
-      // https://docs.aws.amazon.com/cognito/latest/developerguide/using-amazon-cognito-identity-user-pools-javascri
-      //  pt-example-authenticating-admin-created-user.html
-      this.cognitoUser.authenticateUser(authenticationDetails, {
-        onSuccess: (result) => {
-          this.updateSession();
-          observer.next(result);
-          observer.complete();
-        },
-        onFailure: (err) => {
-          console.log('Error:', err);
-          observer.error(err);
-        },
-        newPasswordRequired: (userAttributes, requiredAttributes) => {
-          this.cognitoUser.completeNewPasswordChallenge(password, undefined, this);
-        },
-      });
-    });
+  isLoggedIn(): boolean {
+    const expiration = this.store.getExpiresAt();
+    const now = moment.utc().valueOf();
+    return now < expiration;
   }
 
-  isLoggedIn() {
-    return userPool.getCurrentUser() != null;
+  logOut(): void {
+    this.store.setToken(null);
+    this.store.setExpiresAt(null);
+    this.store.setUsername(null);
   }
 
-  logOut() {
-    userPool.getCurrentUser().signOut();
-    this.cognitoUser = null;
-  }
-
-  getToken() {
-    if (!this.cognitoUser || !this.cognitoUser.signInUserSession) {
-      return '';
-    }
-    return this.cognitoUser.signInUserSession.idToken.jwtToken;
-  }
-
-  // Needed to populate `cognitoUser.signInUserSession`
-  private updateSession() {
-    if (this.cognitoUser != null) {
-      this.cognitoUser.getSession((err, session) => {
-        if (err) {
-          console.error(err);
-          return;
-        }
-      });
-    }
+  private setSession(loginResponse: LoginResponse): void {
+    const expiresAt = moment.utc().add(loginResponse.expiresIn, 'second').valueOf();
+    this.store.setExpiresAt(expiresAt);
+    this.store.setToken(loginResponse.token);
+    this.store.setUsername(loginResponse.username);
   }
 }
