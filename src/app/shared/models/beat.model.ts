@@ -3,7 +3,7 @@ import {GridSound} from './grid-sound.model';
 import {Measure} from './measure.model';
 
 export class Beat {
-  id: number;
+  id: string; //number | string; // TODO: CHANGE TO JUST STRING
   name: string;
   tempo: number;
   timeSignature: TimeSignature;

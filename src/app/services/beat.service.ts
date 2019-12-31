@@ -101,7 +101,7 @@ export class BeatService {
     return this.beat.divisionLevel / this.beat.timeSignature.noteType;
   }
 
-  selectBeat(id: number) {
+  selectBeat(id: string) {
     const selectedBeat = this.beats.find(beat => beat.id === id);
     if (selectedBeat) {
       this.beat = selectedBeat;
@@ -229,7 +229,7 @@ export class BeatService {
     this.onBeatChanged({ shouldStopPlayback: true });
   }
 
-  delete(id: number) {
+  delete(id: string) {
     const index = this.beats.findIndex(b => b.id === id);
     if (index < 0) {
       return;
@@ -255,7 +255,7 @@ export class BeatService {
     const divisionLevel = 16;
     const columnsPerMeasure = this.calculateColumnsPerMeasure(timeSignature, divisionLevel);
     return <Beat> {
-      id: 1,
+      id: '1',
       name: 'Test Beat 1',
       tempo: 60,
       timeSignature,

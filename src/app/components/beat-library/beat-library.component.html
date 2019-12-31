@@ -1,5 +1,8 @@
 <div class="top-buttons">
-  <button (click)="saveBeat()">Save</button>
+  <button (click)="saveBeat()"
+          [disabled]="!authService.isLoggedIn()">
+    Save
+  </button>
   <button (click)="newBeat()">New</button>
   <button (click)="openSoundLibrary()">Sound Library</button>
 </div>

@@ -18,11 +18,11 @@ export class BeatLibraryComponent implements OnInit {
   ngOnInit() {
   }
 
-  onBeatClicked(id: number) {
+  onBeatClicked(id: string) {
     this.beatService.selectBeat(id);
   }
 
-  onDeleteBeatClicked(id: number) {
+  onDeleteBeatClicked(id: string) {
     this.beatService.delete(id);
   }
 

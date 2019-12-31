@@ -1,5 +1,5 @@
 export interface BeatDbRow {
-  id: number;
+  id: string;
   name: string;
   json: string;
 }
