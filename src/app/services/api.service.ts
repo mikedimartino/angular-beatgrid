@@ -1,18 +1,24 @@
-import { HttpClient, HttpHeaders } from '@angular/common/http';
+import { HttpClient } from '@angular/common/http';
 import { Injectable } from '@angular/core';
 import { Beat } from '../shared/models/beat.model';
 import { Observable } from 'rxjs/index';
 import { map } from 'rxjs/internal/operators';
 import { Api } from '../shared/api-types';
 import { MapService } from './map.service';
+import { environment } from '../../environments/environment';
 
 const OLD_API_URL = 'https://xudngyebm8.execute-api.us-west-2.amazonaws.com/dev';
-const BASE_API_URL = 'https://localhost:44391/v1';
+
+const LOCAL_BASE_API_URL = 'https://localhost:44391/v1';
+const PROD_BASE_API_URL = 'https://3lpg3jjyl9.execute-api.us-west-2.amazonaws.com/Prod/v1';
+
+const BASE_API_URL = environment.production ? PROD_BASE_API_URL : LOCAL_BASE_API_URL;
 
 @Injectable({
   providedIn: 'root'
 })
 export class ApiService {
+  baseApiUrl: string;
 
   constructor(private http: HttpClient,
               private mapper: MapService) {

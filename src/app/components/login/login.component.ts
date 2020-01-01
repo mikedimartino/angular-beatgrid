@@ -26,9 +26,8 @@ export class LoginComponent {
         this.dialogRef.close();
       },
       error => {
-        console.log('error!!!:', error);
         this.loading = false;
-        this.errorMessage = error.message;
+        this.errorMessage = error.error.message;
       });
   }
 

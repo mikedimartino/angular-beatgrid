@@ -10,7 +10,6 @@ import {AuthService} from '../../services/auth.service';
   styleUrls: ['./beat-library.component.scss']
 })
 export class BeatLibraryComponent implements OnInit {
-
   constructor(public authService: AuthService,
               public beatService: BeatService,
               private dialog: MatDialog) { }
