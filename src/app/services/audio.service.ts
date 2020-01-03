@@ -1,11 +1,10 @@
 import { Injectable } from '@angular/core';
-import { SoundService } from './sound.service';
 
 @Injectable({
   providedIn: 'root'
 })
 export class AudioService {
-  audioContext = new AudioContext();
+  audioContext = this.getAudioContext();
   audioBuffers: { [key: string]: AudioBuffer } = {};
   streamDestination = (<any>this.audioContext).createMediaStreamDestination();
   streamSource = this.audioContext.createMediaStreamSource(this.streamDestination.stream);
@@ -21,6 +20,17 @@ export class AudioService {
     source.connect(this.audioContext.destination);
     source.connect(this.streamDestination); // For recording
     source.start(timeMs / 1000);
+  }
+
+  private getAudioContext(): AudioContext {
+    let AudioContext = (<any>window).AudioContext || (<any>window).webkitAudioContext || false;
+
+    if (!AudioContext) {
+      alert('Sorry, but the Web Audio API is not supported by your browser.');
+      return <AudioContext>{};
+    }
+
+    return new AudioContext();
   }
 
 }

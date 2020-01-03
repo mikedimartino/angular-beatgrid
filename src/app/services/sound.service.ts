@@ -45,10 +45,14 @@ export class SoundService {
         observables.push(dlSoundObservable);
         dlSoundObservable.subscribe(response => {
           const arrayBuffer = <ArrayBuffer> new Uint8Array(response.Body.data).buffer;
-          this.audioContext.decodeAudioData(arrayBuffer).then((audioBuffer: AudioBuffer) => {
-            this.audioBuffers[key] = audioBuffer;
-            // console.log(`Downloaded audiobuffer for key: ${key}`);
-          });
+          
+          /* This promise based syntax doesn't work in Safari - https://stackoverflow.com/a/48597898 */
+          // this.audioContext.decodeAudioData(arrayBuffer).then((audioBuffer: AudioBuffer) => {
+          //   this.audioBuffers[key] = audioBuffer;
+          // });
+          
+          /* Use callback syntax instead */
+          this.audioContext.decodeAudioData(arrayBuffer, audioBuffer => { this.audioBuffers[key] = audioBuffer });
         });
       } else {
         observables.push(of(this.audioBuffers[key]));
