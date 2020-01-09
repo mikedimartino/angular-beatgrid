@@ -25,8 +25,8 @@ export class ApiService {
   }
 
   readBeats(): Observable<Beat[]> {
-    return this.http.get<Api.GetBeatsResponse>(BASE_API_URL + '/beat').pipe(
-      map(beatsResponse => beatsResponse.beats.map(apiBeat => this.mapper.mapApiBeatToGridBeat(apiBeat)))
+    return this.http.get<Api.Beat[]>(BASE_API_URL + '/beat').pipe(
+      map(beats => beats.map(apiBeat => this.mapper.mapApiBeatToGridBeat(apiBeat)))
     );
   }
 
