@@ -1,7 +1,7 @@
 # Beatgrid
 Angular application for creating musical beats.
 
-http://mikedimartino.com/beatgrid
+http://mikedimartino.com.s3-website-us-west-1.amazonaws.com/beatgrid/
 
 ---
 
